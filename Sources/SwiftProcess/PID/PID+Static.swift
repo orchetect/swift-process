@@ -1,0 +1,75 @@
+//
+//  PID+Static.swift
+//  SwiftProcess • https://github.com/orchetect/swift-process
+//  © 2026 Steffan Andrews • Licensed under MIT License
+//
+
+#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+
+import Foundation
+
+// MARK: - Static Constructors
+
+extension PID {
+    /// PID 0.
+    ///
+    /// Process ID "0" is assigned to kernel processes.
+    @inline(__always) nonisolated
+    public static let pid0 = PID(0)
+
+    /// PID 1.
+    ///
+    /// Process ID "1" is the first user-mode application started by the kernel, and its parent is always PID 0.
+    /// All other processes in the system are a descendent of PID 1.
+    ///
+    /// On Apple platforms, the process with PID 1 is always `launchd`.
+    ///
+    /// In most Linux distributions, the process with PID 1 is `init` or a more modern replacement like `systemd`.
+    @inline(__always) nonisolated
+    public static let pid1 = PID(1)
+}
+
+// MARK: - Current Process
+
+extension PID {
+    /// Returns the process identifier for the current process.
+    public static var current: PID {
+        PID(ProcessInfo.processInfo.processIdentifier)
+    }
+}
+
+// MARK: - System Processes Iterators
+
+extension PID {
+    /// Returns process identifiers (PIDs) for all currently running processes in the system.
+    /// This returns a sequence that iterates lazily.
+    nonisolated
+    public static var all: InfoSequence<PID> {
+        get throws(SystemError) {
+            let iterator = try InfoIterator(elementTransform: {
+                PID($0.kp_proc.p_pid)
+            })
+            return .init(iterator)
+        }
+    }
+
+    /// Returns process identifiers (PIDs) for all currently running processes in the system.
+    /// This returns a sequence that iterates lazily.
+    ///
+    /// This method allows excluding specific identifiers from the sequence.
+    /// Commonly excluded identifiers include PID 0 (``pid0``), PID 1 (``pid1``), and the
+    /// current process (``current``).
+    nonisolated
+    public static func all(
+        excluding excludedPIDs: some Sequence<PID>
+    ) throws(SystemError) -> InfoSequence<PID> {
+        let iterator = try InfoIterator<PID>(elementTransform: {
+            let rawPID = $0.kp_proc.p_pid
+            guard !excludedPIDs.contains(pid: rawPID) else { return nil }
+            return PID(rawPID)
+        })
+        return .init(iterator)
+    }
+}
+
+#endif

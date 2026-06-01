@@ -1,0 +1,14 @@
+//
+//  PID InfoSequence.swift
+//  SwiftProcess • https://github.com/orchetect/swift-process
+//  © 2026 Steffan Andrews • Licensed under MIT License
+//
+
+#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+
+extension PID {
+    /// Iterate over raw info for all processes in the system lazily.
+    public typealias InfoSequence<Element> = IteratorSequence<InfoIterator<Element>>
+}
+
+#endif
