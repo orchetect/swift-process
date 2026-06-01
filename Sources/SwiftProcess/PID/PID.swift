@@ -53,11 +53,7 @@ extension PID: Sendable { }
 // MARK: - RawRepresentable
 
 extension PID: RawRepresentable {
-    #if canImport(Darwin)
     public typealias RawValue = pid_t
-    #else
-    public typealias RawValue = Int32
-    #endif
 
     @inline(__always)
     nonisolated

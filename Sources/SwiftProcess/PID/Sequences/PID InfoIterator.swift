@@ -34,27 +34,46 @@ extension PID {
         // MARK: Init
 
         /// Returns the raw PID value for each process.
+        ///
+        /// - Parameters:
+        ///   - mib: Memory Information Base to provide to the underlying `sysctl` call. If `nil`, default is used.
         nonisolated
         public init(
-            memoryInformationBase: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
+            memoryInformationBase mib: [Int32]? = nil
         ) throws(SystemError) where Element == PID.RawValue {
             elementTransform = { $0.kp_proc.p_pid }
-            (processList, processCount) = try Self._pidList(mib: memoryInformationBase)
+            (processList, processCount) = try Self._pidList(mib: mib ?? Self.defaultMemoryInformationBase)
         }
 
         /// Allows transforming the process info to return a custom value type for each process.
+        ///
+        /// - Parameters:
+        ///   - mib: Memory Information Base to provide to the underlying `sysctl` call. If `nil`, default is used.
+        ///   - elementTransform: Transform to apply to each process info which determines the element value and type.
         nonisolated
         public init(
-            memoryInformationBase: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_ALL],
+            memoryInformationBase mib: [Int32]? = nil,
             elementTransform: @escaping ElementTransform
         ) throws(SystemError) {
             self.elementTransform = elementTransform
-            (processList, processCount) = try Self._pidList(mib: memoryInformationBase)
+            (processList, processCount) = try Self._pidList(mib: mib ?? Self.defaultMemoryInformationBase)
         }
 
         deinit {
             processList.deallocate()
         }
+    }
+}
+
+// MARK: - Static
+
+extension PID.InfoIterator {
+    public static var defaultMemoryInformationBase: [Int32] {
+        #if canImport(Darwin)
+        [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
+        #else
+        [KERN_PROC, KERN_PROC_ALL, KERN_USER]
+        #endif
     }
 }
 
