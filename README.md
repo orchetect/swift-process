@@ -32,6 +32,10 @@ This library is available as a Swift Package Manager (SPM) package.
    import SwiftProcess
    ```
 
+## Documentation
+
+See the [online documentation](https://swiftpackageindex.com/orchetect/swift-process/documentation) for library usage and getting started info.
+
 ## Author
 
 Coded by a bunch of 🐹 hamsters in a trenchcoat that calls itself [@orchetect](https://github.com/orchetect).
@@ -39,3 +43,24 @@ Coded by a bunch of 🐹 hamsters in a trenchcoat that calls itself [@orchetect]
 ## License
 
 Licensed under the MIT license. See [LICENSE](LICENSE) for details.
+
+## Sponsoring
+
+If you enjoy using this library and want to contribute to open-source financially, GitHub sponsorship is much appreciated. Feedback and code contributions are also welcome.
+
+## Community & Support
+
+Please do not email maintainers for technical support. Several options are available for issues and questions:
+
+- Questions and feature ideas can be posted to [Discussions](https://github.com/orchetect/swift-process/discussions).
+- If an issue is a verifiable bug with reproducible steps it may be posted in [Issues](https://github.com/orchetect/swift-process/issues).
+
+## Contributions
+
+Contributions are welcome. Posting in [Discussions](https://github.com/orchetect/swift-process/discussions) first prior to new submitting PRs for features or modifications is encouraged.
+
+## Code Quality & AI Contribution Policy
+
+In an effort to maintain a consistent level of code quality and safety, this repository was built by hand and is maintained without the use of AI code generation.
+
+AI-assisted contributions are welcome, but must remain modest in scope, maintain the same degree of quality and care, and be thoroughly vetted before acceptance.
