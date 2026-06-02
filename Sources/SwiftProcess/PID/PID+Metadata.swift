@@ -41,40 +41,14 @@ extension PID {
     public var name: String? {
         guard let bsdInfo else { return nil }
 
+        // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
         typealias NameTuple = (
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar,
-            CChar
+            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
+            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
+            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
+            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar
         )
+        // swiftformat:options --wrap-collections before-first --allow-partial-wrapping false
 
         let tuple: NameTuple = bsdInfo.pbi_name
         let charCount = MemoryLayout<NameTuple>.stride // 32 bytes
