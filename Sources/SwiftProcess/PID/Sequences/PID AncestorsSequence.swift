@@ -4,7 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+#if os(macOS) || targetEnvironment(macCatalyst)
 
 extension PID {
     /// Sequence of ancestors of a process.

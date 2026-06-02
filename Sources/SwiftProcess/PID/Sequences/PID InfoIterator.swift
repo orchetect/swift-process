@@ -4,7 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+#if os(macOS) || targetEnvironment(macCatalyst)
 
 import Foundation
 
@@ -69,11 +69,7 @@ extension PID {
 
 extension PID.InfoIterator {
     public static var defaultMemoryInformationBase: [Int32] {
-        #if canImport(Darwin)
         [CTL_KERN, KERN_PROC, KERN_PROC_ALL]
-        #else
-        [KERN_PROC, KERN_PROC_ALL, KERN_USER]
-        #endif
     }
 }
 

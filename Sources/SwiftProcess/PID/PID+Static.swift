@@ -38,6 +38,8 @@ extension PID {
     }
 }
 
+#if os(macOS) || targetEnvironment(macCatalyst)
+
 // MARK: - System Processes Iterators
 
 extension PID {
@@ -71,5 +73,7 @@ extension PID {
         return .init(iterator)
     }
 }
+
+#endif
 
 #endif

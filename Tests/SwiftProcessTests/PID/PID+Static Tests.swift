@@ -29,6 +29,8 @@ struct PID_Static_Tests {
         #expect(PID.current.rawValue == ProcessInfo.processInfo.processIdentifier)
     }
 
+    #if os(macOS) || targetEnvironment(macCatalyst)
+    
     // MARK: - System Processes Iterators
 
     @Test
@@ -49,6 +51,8 @@ struct PID_Static_Tests {
         #expect(!pidsWithout0Or1.contains { $0.rawValue == 0 })
         #expect(!pidsWithout0Or1.contains { $0.rawValue == 1 })
     }
+    
+    #endif
 }
 
 #endif

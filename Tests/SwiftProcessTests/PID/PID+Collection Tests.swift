@@ -4,7 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
+#if os(macOS) || targetEnvironment(macCatalyst)
 
 import Foundation
 import SwiftProcess
@@ -15,7 +15,7 @@ struct PID_Collection_Tests {
     /// Provide a process identifier of a live process in the system to test against.
     private func exampleProcess() -> PID? {
         // we can just use the test target's process
-        PID(rawValue: ProcessInfo.processInfo.processIdentifier)
+        PID(ProcessInfo.processInfo.processIdentifier)
     }
 
     @Test
