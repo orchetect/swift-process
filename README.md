@@ -8,7 +8,7 @@ The library provides cross-platform foundational types for things like process I
 
 > [!NOTE]
 >
-> While the library is primarily oriented toward macOS, functionality for other platforms such as Linux is implemented where possible
+> While the library is primarily oriented toward macOS, functionality for other platforms such as Linux is implemented where possible.
 
 ## Getting Started
 
