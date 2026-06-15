@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
-
 extension Sequence<PID> {
     /// Returns the first element in the sequence.
     nonisolated
@@ -20,5 +18,3 @@ extension Sequence<PID> {
         contains { $0.rawValue == rawPID }
     }
 }
-
-#endif

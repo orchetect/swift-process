@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
-
 import Foundation
 
 // MARK: - Static Constructors
@@ -73,7 +71,5 @@ extension PID {
         return .init(iterator)
     }
 }
-
-#endif
 
 #endif

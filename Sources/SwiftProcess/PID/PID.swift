@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
-
 import Foundation
 
 /// Process Identifier.
@@ -88,5 +86,3 @@ extension PID: CustomDebugStringConvertible {
         "PID(\(rawValue))"
     }
 }
-
-#endif
