@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
-
 import Foundation
 import SwiftProcess
 import Testing
@@ -54,5 +52,3 @@ struct PID_Static_Tests {
     
     #endif
 }
-
-#endif

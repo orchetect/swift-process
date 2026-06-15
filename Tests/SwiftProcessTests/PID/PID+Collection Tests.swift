@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-
 import Foundation
 import SwiftProcess
 import Testing
@@ -17,9 +15,21 @@ struct PID_Collection_Tests {
         // we can just use the test target's process
         PID(ProcessInfo.processInfo.processIdentifier)
     }
-
+    
     @Test
-    func first() {
+    func first_dummyPIDs() {
+        let sequence: [PID] = [PID(123), PID(456), PID(789)]
+        
+        // ensure first is the correct result
+        #expect(sequence.first == PID(123))
+        // ensure it returns the same result each time it's called
+        #expect(sequence.first == PID(123))
+        #expect(sequence.first == PID(123))
+    }
+
+    #if os(macOS) || targetEnvironment(macCatalyst)
+    @Test
+    func first_RealPIDs() {
         guard let pid = exampleProcess() else { return }
 
         let sequence = PID.AncestorsSequence(
@@ -34,6 +44,14 @@ struct PID_Collection_Tests {
         #expect(sequence.first == pid)
         #expect(sequence.first == pid)
     }
+    #endif
+    
+    @Test
+    func contains_dummyPIDs() {
+        let sequence: [PID] = [PID(123), PID(456), PID(789)]
+        
+        #expect(sequence.contains(PID(123)))
+        #expect(sequence.contains(PID(456)))
+        #expect(!sequence.contains(PID(100)))
+    }
 }
-
-#endif
