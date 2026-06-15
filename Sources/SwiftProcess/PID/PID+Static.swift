@@ -36,20 +36,30 @@ extension PID {
     }
 }
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-
 // MARK: - System Processes Iterators
 
 extension PID {
     /// Returns process identifiers (PIDs) for all currently running processes in the system.
     /// This returns a sequence that iterates lazily.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns an empty sequence.
+    @available(macOS 10.15, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public static var all: InfoSequence<PID> {
         get throws(SystemError) {
+            #if os(macOS) || targetEnvironment(macCatalyst)
             let iterator = try InfoIterator(elementTransform: {
                 PID($0.kp_proc.p_pid)
             })
-            return .init(iterator)
+            return InfoSequence(iterator)
+            #else
+            return InfoSequence(InfoIterator<PID>())
+            #endif
         }
     }
 
@@ -59,17 +69,27 @@ extension PID {
     /// This method allows excluding specific identifiers from the sequence.
     /// Commonly excluded identifiers include PID 0 (``pid0``), PID 1 (``pid1``), and the
     /// current process (``current``).
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns an empty sequence.
+    @available(macOS 10.15, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public static func all(
         excluding excludedPIDs: some Sequence<PID>
     ) throws(SystemError) -> InfoSequence<PID> {
+        #if os(macOS) || targetEnvironment(macCatalyst)
         let iterator = try InfoIterator<PID>(elementTransform: {
             let rawPID = $0.kp_proc.p_pid
             guard !excludedPIDs.contains(pid: rawPID) else { return nil }
             return PID(rawPID)
         })
-        return .init(iterator)
+        return InfoSequence(iterator)
+        #else
+        return InfoSequence(InfoIterator<PID>())
+        #endif
     }
 }
-
-#endif

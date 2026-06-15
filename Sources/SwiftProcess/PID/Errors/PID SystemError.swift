@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst) || os(Linux)
-
 import protocol Foundation.LocalizedError
 import func Foundation.perror
 
@@ -61,5 +59,3 @@ extension PID.SystemError: LocalizedError {
         "\(message) (errno: \(errno))"
     }
 }
-
-#endif

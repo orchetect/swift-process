@@ -4,9 +4,9 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-
 import Foundation
+
+#if os(macOS) || targetEnvironment(macCatalyst)
 
 extension PID {
     /// Iterate over raw info for all processes in the system lazily.
@@ -129,6 +129,22 @@ extension PID.InfoIterator {
         }
 
         return (pointer: processList, count: entryCount)
+    }
+}
+
+#else
+
+extension PID {
+    /// Dummy stand-in for `InfoIterator` on platforms that do not support process info lookup.
+    public class InfoIterator<Element>: IteratorProtocol {
+        
+        nonisolated
+        init() { }
+        
+        nonisolated
+        public func next() -> Element? {
+            nil
+        }
     }
 }
 

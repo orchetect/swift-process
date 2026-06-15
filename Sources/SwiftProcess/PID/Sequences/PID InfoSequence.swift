@@ -4,11 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-
 extension PID {
     /// Iterate over raw info for all processes in the system lazily.
     public typealias InfoSequence<Element> = IteratorSequence<InfoIterator<Element>>
 }
-
-#endif

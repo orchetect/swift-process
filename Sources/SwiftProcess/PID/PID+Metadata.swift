@@ -4,11 +4,11 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-
 import Foundation
 
 extension PID {
+    #if os(macOS) || targetEnvironment(macCatalyst)
+    
     /// Returns the BSD info struct for the process.
     /// If the process is no longer running or an error occurred, `nil` is returned.
     nonisolated
@@ -33,10 +33,21 @@ extension PID {
         return bsdInfo
     }
 
+    #endif
+    
     /// Returns the name of the process.
     /// If the process is no longer running or no name is returned from the system, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
+    @available(macOS 10.15, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public var name: String? {
+        #if os(macOS) || targetEnvironment(macCatalyst)
         guard let bsdInfo else { return nil }
 
         // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
@@ -56,7 +67,8 @@ extension PID {
             }
         }
         return string
+        #else
+        return nil
+        #endif
     }
 }
-
-#endif
