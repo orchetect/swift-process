@@ -41,6 +41,21 @@ struct BundleID_Tests {
     }
 
     @Test
+    func comparable() {
+        // equal
+        #expect(!(BundleID(rawValue: "com.apple.Safari") < BundleID(rawValue: "com.apple.Safari")))
+        #expect(!(BundleID(rawValue: "com.apple.Safari") > BundleID(rawValue: "com.apple.Safari")))
+
+        #expect((BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.Safari")))
+        #expect(!(BundleID(rawValue: "com.apple.finder") < BundleID(rawValue: "com.apple.Safari"))) // by char, not lexical
+        #expect((BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.safari")))
+
+        #expect(!(BundleID(rawValue: "com.apple.Finder") > BundleID(rawValue: "com.apple.Safari")))
+        #expect((BundleID(rawValue: "com.apple.finder") > BundleID(rawValue: "com.apple.Safari"))) // by char, not lexical
+        #expect(!(BundleID(rawValue: "com.apple.Finder") > BundleID(rawValue: "com.apple.safari")))
+    }
+
+    @Test
     func expressibleByStringLiteral_assign() {
         let id: BundleID = "com.apple.Safari"
         #expect(id.rawValue == "com.apple.Safari")
