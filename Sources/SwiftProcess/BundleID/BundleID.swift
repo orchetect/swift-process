@@ -55,7 +55,7 @@ extension BundleID: RawRepresentable {
     }
 }
 
-// MARK: - ExpressibleByIntegerLiteral
+// MARK: - ExpressibleByStringLiteral
 
 extension BundleID: ExpressibleByStringLiteral {
     @inline(__always) @_disfavoredOverload
