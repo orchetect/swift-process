@@ -22,7 +22,6 @@ extension PID {
 
         // MARK: Parameters
 
-        nonisolated
         private let elementTransform: ElementTransform
 
         // MARK: State
