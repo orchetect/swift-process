@@ -33,6 +33,13 @@ public struct BundleID {
 
 extension BundleID: Equatable { }
 
+extension BundleID: Comparable {
+    public static func < (lhs: BundleID, rhs: BundleID) -> Bool {
+        // use default string comparison, not localized
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
 extension BundleID: Hashable { }
 
 extension BundleID: Sendable { }
