@@ -56,6 +56,23 @@ struct BundleID_Tests {
     }
 
     @Test
+    func equatable() {
+        #expect(BundleID(rawValue: "com.apple.Safari") == BundleID(rawValue: "com.apple.Safari"))
+        #expect(BundleID(rawValue: "com.apple.Safari") != BundleID(rawValue: "com.apple.safari"))
+        #expect(BundleID(rawValue: "com.apple.Safari") != BundleID(rawValue: "COM.APPLE.SAFARI"))
+        #expect(BundleID(rawValue: "com.apple.Safari") != BundleID(rawValue: "com.apple.Finder"))
+        #expect(BundleID(rawValue: "com.apple.Safari") != BundleID(rawValue: "com.apple.Safari "))
+        #expect(BundleID(rawValue: "com.apple.Safari") != BundleID(rawValue: " com.apple.Safari"))
+
+        #expect(BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.Safari")))
+        #expect(BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.safari")))
+        #expect(BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "COM.APPLE.SAFARI")))
+        #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.Safari ")))
+        #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: " com.apple.Safari")))
+        #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.Finder")))
+    }
+
+    @Test
     func expressibleByStringLiteral_assign() {
         let id: BundleID = "com.apple.Safari"
         #expect(id.rawValue == "com.apple.Safari")
