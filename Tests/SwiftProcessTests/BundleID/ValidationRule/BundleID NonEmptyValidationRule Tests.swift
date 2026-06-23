@@ -1,5 +1,5 @@
 //
-//  BundleID EmptyValidationRule Tests.swift
+//  BundleID NonEmptyValidationRule Tests.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -8,7 +8,7 @@ import SwiftProcess
 import Testing
 
 @Suite
-struct BundleID_EmptyValidationRule_Tests {
+struct BundleID_NonEmptyValidationRule_Tests {
     @Test
     func nonEmpty_relaxed_valid() async throws {
         let strings = [
@@ -39,7 +39,7 @@ struct BundleID_EmptyValidationRule_Tests {
 
         for string in strings {
             #expect(
-                BundleID.EmptyValidationRule().isValid(string: string),
+                BundleID.NonEmptyValidationRule().isValid(string: string),
                 "'\(string)' should be valid"
             )
         }
@@ -60,7 +60,7 @@ struct BundleID_EmptyValidationRule_Tests {
 
         for string in strings {
             #expect(
-                !BundleID.EmptyValidationRule().isValid(string: string),
+                !BundleID.NonEmptyValidationRule().isValid(string: string),
                 "'\(string)' should be invalid"
             )
         }
