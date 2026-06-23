@@ -1,5 +1,5 @@
 //
-//  BundleID+Metadata+BundleID Tests.swift
+//  BundleID+Metadata+PID Tests.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -13,7 +13,7 @@ import SwiftProcess
 import Testing
 
 @Suite
-struct BundleID_Metadata_BundleID_Tests {
+struct BundleID_Metadata_PID_Tests {
     @Test
     func pids() {
         let idString = "com.apple.finder"
