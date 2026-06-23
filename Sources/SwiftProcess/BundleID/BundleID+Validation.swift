@@ -4,8 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-// TODO: Add bundle ID string validation methods/properties and failable init that validates inline
-
 extension BundleID {
     /// Creates a new instance by validating a bundle identifier string.
     /// If validation fails, `nil` is returned.
