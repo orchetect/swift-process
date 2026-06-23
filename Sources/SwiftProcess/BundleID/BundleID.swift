@@ -47,6 +47,19 @@ extension BundleID: Comparable {
 
 extension BundleID: Hashable { }
 
+extension BundleID: Codable {
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+        self.init(string)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+}
+
 extension BundleID: Sendable { }
 
 // MARK: - RawRepresentable
