@@ -31,7 +31,12 @@ public struct BundleID {
     }
 }
 
-extension BundleID: Equatable { }
+extension BundleID: Equatable {
+    /// Returns `true` if the bundle identifier is equal to another using case-insensitive comparison.
+    public func isEqualTo(caseInsensitive other: BundleID) -> Bool {
+        rawValue.caseInsensitiveCompare(other.rawValue) == .orderedSame
+    }
+}
 
 extension BundleID: Comparable {
     public static func < (lhs: BundleID, rhs: BundleID) -> Bool {
