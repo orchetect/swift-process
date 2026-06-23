@@ -4,6 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
+import Foundation
 import SwiftProcess
 import Testing
 
@@ -70,6 +71,26 @@ struct BundleID_Tests {
         #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.Safari ")))
         #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: " com.apple.Safari")))
         #expect(!BundleID(rawValue: "com.apple.Safari").isEqualTo(caseInsensitive: BundleID(rawValue: "com.apple.Finder")))
+    }
+
+    @Test
+    func codable() throws {
+        let bundleID = BundleID("com.apple.Safari")
+
+        // encode
+        let encoder = JSONEncoder()
+        let encoded = try encoder.encode(bundleID)
+
+        // analyze encoded data to ensure it encodes as a single value
+        let decodedString = try #require(String(data: encoded, encoding: .utf8))
+        #expect(decodedString == #""com.apple.Safari""#)
+
+        // decode
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(BundleID.self, from: encoded)
+
+        // compare instances
+        #expect(decoded == bundleID)
     }
 
     @Test
