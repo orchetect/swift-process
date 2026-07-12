@@ -4,13 +4,12 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-// Bundle ID lookup is only available on macOS (not including macCatalyst)
-
 #if os(macOS)
-
 import class AppKit.NSRunningApplication
 import class AppKit.NSWorkspace
 import class Foundation.Bundle
+#endif
+
 import struct Foundation.URL
 
 extension BundleID {
@@ -18,11 +17,17 @@ extension BundleID {
     ///
     /// Note that this method may take some time to return, so it is ideal to call it on a background
     /// actor asynchronously and await its result.
+    ///
+    /// > Note: Bundle information lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always returns `nil`.
     nonisolated
     public var bundleURL: URL? {
+        #if os(macOS)
         NSWorkspace.shared.urlForApplication(withBundleIdentifier: rawValue)
             ?? Bundle(identifier: rawValue)?.bundleURL
+        #else
+        return nil
+        #endif
     }
 }
 
-#endif

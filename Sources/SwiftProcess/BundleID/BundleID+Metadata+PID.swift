@@ -19,7 +19,7 @@ import class AppKit.NSRunningApplication
 extension BundleID {
     /// Returns all process identifiers for running processes associated with the specified bundle identifier.
     ///
-    /// > Note: Bundle ID lookup is only available on macOS (not including Mac Catalyst).
+    /// > Note: Bundle ID and PID lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always returns an empty collection.
     nonisolated
     public var pids: Set<PID> {
