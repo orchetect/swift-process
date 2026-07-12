@@ -4,7 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
+#if os(macOS)
 
 import Foundation
 import SwiftProcess

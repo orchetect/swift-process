@@ -25,12 +25,14 @@ struct PID_Metadata_sysctl_Tests {
         #expect(launchDate < Date())
     }
 
+    #if os(macOS)
     @Test
     func launchDate_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
         let launchDate = try #require(id.launchDate)
         #expect(launchDate < Date())
     }
+    #endif
 
     @Test
     func uptime() throws {
@@ -39,12 +41,14 @@ struct PID_Metadata_sysctl_Tests {
         #expect(uptime > 0.0)
     }
 
+    #if os(macOS)
     @Test
     func uptime_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
         let uptime = try #require(id.uptime)
         #expect(uptime > 0.0)
     }
+    #endif
 }
 
 #endif

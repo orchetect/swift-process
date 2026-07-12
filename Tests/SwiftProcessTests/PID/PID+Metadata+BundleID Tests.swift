@@ -4,7 +4,7 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if os(macOS) || targetEnvironment(macCatalyst)
+#if os(macOS)
 
 import Foundation
 import SwiftProcess
@@ -21,15 +21,15 @@ struct PID_Metadata_BundleID_Tests {
     @Test
     func bundleID() throws {
         let id = try #require(exampleProcess())
-        let commandName = try #require(id.commandName)
-        #expect(!commandName.isEmpty)
+        let bundleID = try #require(id.bundleID)
+        #expect(!bundleID.rawValue.isEmpty)
     }
 
     @Test
     func bundleID_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
-        let commandName = try #require(id.bundleID)
-        #expect(commandName == "com.apple.finder")
+        let bundleID = try #require(id.bundleID)
+        #expect(bundleID == "com.apple.finder")
     }
 }
 

@@ -25,6 +25,7 @@ struct PID_Metadata_CodeSigning_Tests {
         #expect(!infoDict.isEmpty)
     }
 
+    #if os(macOS)
     @Test
     func codeSigningInfo_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
@@ -32,6 +33,7 @@ struct PID_Metadata_CodeSigning_Tests {
         let bundleIDString = try #require(infoDict["identifier"] as? String)
         #expect(bundleIDString.caseInsensitiveCompare("com.apple.finder") == .orderedSame)
     }
+    #endif
 }
 
 #endif

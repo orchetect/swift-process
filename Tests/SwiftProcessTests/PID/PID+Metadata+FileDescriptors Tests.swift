@@ -20,10 +20,19 @@ struct PID_Metadata_FileDescriptors_Tests {
 
     @Test
     func fileDescriptors() throws {
+        let id = try #require(exampleProcess())
+        let descriptors = id.fileDescriptors
+        #expect(!descriptors.isEmpty)
+    }
+
+    #if os(macOS)
+    @Test
+    func fileDescriptors_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
         let descriptors = id.fileDescriptors
         #expect(!descriptors.isEmpty)
     }
+    #endif
 }
 
 #endif
