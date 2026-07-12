@@ -35,6 +35,7 @@ struct Collection_PID_Tests {
         let sequence = PID.AncestorsSequence(
             initialPID: pid,
             isInitialIncluded: true,
+            isPID0Included: true,
             isPID1Included: true
         )
 
