@@ -1,38 +1,36 @@
 //
-//  PID FileDescriptor FDType.swift
+//  FileDescriptorType.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
 
-extension PID.FileDescriptor {
-    public enum FDType {
-        case appleTalk
-        case channel
-        case fsEvents
-        case kqueue
-        case netPolicy
-        case nexus
-        case pipe
-        case psem
-        case pshm
-        case socket
-        case vNode
-    }
+public enum FileDescriptorType {
+    case appleTalk
+    case channel
+    case fsEvents
+    case kqueue
+    case netPolicy
+    case nexus
+    case pipe
+    case psem
+    case pshm
+    case socket
+    case vNode
 }
 
-extension PID.FileDescriptor.FDType: Equatable { }
+extension FileDescriptorType: Equatable { }
 
-extension PID.FileDescriptor.FDType: Hashable { }
+extension FileDescriptorType: Hashable { }
 
-extension PID.FileDescriptor.FDType: Sendable { }
+extension FileDescriptorType: Sendable { }
 
-extension PID.FileDescriptor.FDType: CaseIterable { }
+extension FileDescriptorType: CaseIterable { }
 
 #if os(macOS) || targetEnvironment(macCatalyst)
 
-extension PID.FileDescriptor.FDType: RawRepresentable {
+extension FileDescriptorType: RawRepresentable {
     public init?(rawValue: Int32) {
         guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
             return nil

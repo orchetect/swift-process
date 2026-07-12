@@ -13,7 +13,7 @@ extension PID {
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always returns an empty collection.
     nonisolated
-    public var fileDescriptors: [FileDescriptor] {
+    public var fileDescriptors: [FileDescriptorInfo] {
         #if os(macOS) || targetEnvironment(macCatalyst)
         let bufferSize = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, nil, 0)
 
@@ -27,7 +27,7 @@ extension PID {
             initializedCount = Int(initializedByteCount) / stride
         }
 
-        let fileDescriptors = allFDs.compactMap { FileDescriptor(fdInfo: $0, pid: rawValue) }
+        let fileDescriptors = allFDs.compactMap { FileDescriptorInfo(fdInfo: $0, pid: self) }
 
         return fileDescriptors
         #else
