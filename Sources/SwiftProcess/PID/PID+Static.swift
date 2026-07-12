@@ -36,6 +36,25 @@ extension PID {
     }
 }
 
+// MARK: - Random
+
+extension PID {
+    /// Returns a random process identifier that does not exist (does not belong to any process
+    /// currently running in the system).
+    ///
+    /// This is mainly useful for debugging and unit testing and has no real use case in production code.
+    public static var randomUnused: PID {
+        get throws(SystemError) {
+            let allPIDs = try Self.all
+            var pid: pid_t = 0
+            while pid == 0 || allPIDs.contains(where: { $0.rawValue == pid }) {
+                pid = PID.RawValue.random(in: 1000 ... PID.RawValue.max)
+            }
+            return PID(pid)
+        }
+    }
+}
+
 // MARK: - System Processes Iterators
 
 extension PID {
