@@ -1,12 +1,12 @@
 //
-//  FileDescriptorType.swift
+//  FileDescriptorFlavor.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
 
-public enum FileDescriptorType {
+public enum FileDescriptorFlavor {
     case appleTalk
     case channel
     case fsEvents
@@ -20,17 +20,17 @@ public enum FileDescriptorType {
     case vNode
 }
 
-extension FileDescriptorType: Equatable { }
+extension FileDescriptorFlavor: Equatable { }
 
-extension FileDescriptorType: Hashable { }
+extension FileDescriptorFlavor: Hashable { }
 
-extension FileDescriptorType: Sendable { }
+extension FileDescriptorFlavor: Sendable { }
 
-extension FileDescriptorType: CaseIterable { }
+extension FileDescriptorFlavor: CaseIterable { }
 
 #if os(macOS) || targetEnvironment(macCatalyst)
 
-extension FileDescriptorType: RawRepresentable {
+extension FileDescriptorFlavor: RawRepresentable {
     public init?(rawValue: Int32) {
         guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
             return nil

@@ -46,7 +46,7 @@ extension FileDescriptorInfo {
         }
     }
 
-    public var fileDescriptorType: FileDescriptorType {
+    public var flavor: FileDescriptorFlavor {
         switch self {
         #if os(macOS) || targetEnvironment(macCatalyst)
         case .appleTalk: .appleTalk
@@ -73,10 +73,10 @@ extension FileDescriptorInfo {
         let fd = fdInfo.proc_fd
 
         guard let fdTypeInt32 = Int32(exactly: fdInfo.proc_fdtype),
-              let fdType = FileDescriptorType(rawValue: fdTypeInt32)
+              let fileDescriptorFlavor = FileDescriptorFlavor(rawValue: fdTypeInt32)
         else { return nil }
 
-        switch fdType {
+        switch fileDescriptorFlavor {
         case .appleTalk:
             self = .appleTalk(fd: fd) // TODO: implement info
 
