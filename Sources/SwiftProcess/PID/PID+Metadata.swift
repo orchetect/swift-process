@@ -20,15 +20,16 @@ extension PID {
     @available(watchOS, deprecated, message: "Not available on watchOS.")
     @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
-    public var executablePath: String {
+    public var executablePath: String? {
         #if os(macOS) || targetEnvironment(macCatalyst)
         var path = [CChar](repeating: 0x00, count: Self.kProcPidPathInfoMaxSize)
-        proc_pidpath(rawValue, &path, Self.PROC_PIDPATHINFO_MAXSIZE)
-        let string = withUnsafePointer(to: path) { ptr in
-            ptr.withMemoryRebound(to: CChar.self, capacity: Self.kProcPidPathInfoMaxSize) { pointer in
-                String(cString: pointer)
-            }
-        }
+
+        // returns number of bytes if successful, or -1 if it failed
+        let result = proc_pidpath(rawValue, &path, Self.PROC_PIDPATHINFO_MAXSIZE)
+        guard result > 0 else { return nil }
+
+        let string = String(cString: &path)
+        guard !string.isEmpty else { return nil }
         return string
         #else
         return ""
@@ -45,7 +46,8 @@ extension PID {
     @available(watchOS, deprecated, message: "Not available on watchOS.")
     @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
-    public var executableURL: URL {
-        URL(fileURLWithPath: executablePath)
+    public var executableURL: URL? {
+        guard let executablePath else { return nil }
+        return URL(fileURLWithPath: executablePath)
     }
 }
