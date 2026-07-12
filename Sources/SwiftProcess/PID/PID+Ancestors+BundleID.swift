@@ -17,6 +17,9 @@ import AppKit
 extension PID {
     /// Returns `true` if any of a PID's ancestors have the given bundle ID, using case-insensitive comparison.
     /// Optionally start with the specified PID first before iterating on its ancestors.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `false`.
     @_disfavoredOverload
     nonisolated
     public func hasAncestor(withBundleID bundleID: BundleID) -> Bool {
@@ -29,6 +32,9 @@ extension PID {
 
     /// Returns `true` if any of a PID's ancestors have the given bundle ID, using case-insensitive comparison.
     /// Optionally start with the specified PID first before iterating on its ancestors.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `false`.
     nonisolated
     public func hasAncestor(withBundleID bundleID: String) -> Bool {
         #if os(macOS)
