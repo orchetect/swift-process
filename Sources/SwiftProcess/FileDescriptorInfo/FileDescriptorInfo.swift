@@ -8,8 +8,15 @@ import Foundation
 
 public enum FileDescriptorInfo {
     #if os(macOS) || targetEnvironment(macCatalyst)
+    case appleTalk(fd: Int32) // TODO: Implement info
+    case channel(fd: Int32) // TODO: Implement info
     case fsEvents(fd: Int32, pipeInfo: kqueue_info)
+    case kqueue(fd: Int32) // TODO: Implement info
+    case netPolicy(fd: Int32) // TODO: Implement info
+    case nexus(fd: Int32) // TODO: Implement info
     case pipe(fd: Int32, pipeInfo: pipe_info)
+    case psem(fd: Int32) // TODO: Implement info
+    case pshm(fd: Int32) // TODO: Implement info
     case socket(fd: Int32, socketInfo: socket_info)
     #endif
 
@@ -19,15 +26,42 @@ public enum FileDescriptorInfo {
 extension FileDescriptorInfo: Sendable { }
 
 extension FileDescriptorInfo {
+    /// Proxy property to return the `fd` associated value.
     public var fd: Int32 {
         switch self {
         #if os(macOS) || targetEnvironment(macCatalyst)
+        case let .appleTalk(fd: fd): fd
+        case let .channel(fd: fd): fd
         case let .fsEvents(fd: fd, pipeInfo: _): fd
+        case let .kqueue(fd: fd): fd
+        case let .netPolicy(fd: fd): fd
+        case let .nexus(fd: fd): fd
         case let .pipe(fd: fd, pipeInfo: _): fd
+        case let .psem(fd: fd): fd
+        case let .pshm(fd: fd): fd
         case let .socket(fd: fd, socketInfo: _): fd
         #endif
-            
+
         case let .vNode(fd: fd, path: _): fd
+        }
+    }
+
+    public var fileDescriptorType: FileDescriptorType {
+        switch self {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        case .appleTalk: .appleTalk
+        case .channel: .channel
+        case .fsEvents: .fsEvents
+        case .kqueue: .kqueue
+        case .netPolicy: .netPolicy
+        case .nexus: .nexus
+        case .pipe: .pipe
+        case .psem: .psem
+        case .pshm: .pshm
+        case .socket: .socket
+        #endif
+
+        case .vNode: .vNode
         }
     }
 }
@@ -44,33 +78,33 @@ extension FileDescriptorInfo {
 
         switch fdType {
         case .appleTalk:
-            return nil // TODO: implement
+            self = .appleTalk(fd: fd) // TODO: implement info
 
         case .channel:
-            return nil // TODO: implement
+            self = .channel(fd: fd) // TODO: implement info
 
         case .fsEvents:
             guard let pipeInfo = pid.fdInfo(type: .fsEventsInfo, forFD: fd) else { return nil }
             self = .fsEvents(fd: fd, pipeInfo: pipeInfo)
 
         case .kqueue:
-            return nil // TODO: implement
+            self = .kqueue(fd: fd) // TODO: implement info
 
         case .netPolicy:
-            return nil // TODO: implement
+            self = .netPolicy(fd: fd) // TODO: implement info
 
         case .nexus:
-            return nil // TODO: implement
+            self = .nexus(fd: fd) // TODO: implement info
 
         case .pipe:
             guard let pipeInfo = pid.fdInfo(type: .pipeInfo, forFD: fd) else { return nil }
             self = .pipe(fd: fd, pipeInfo: pipeInfo)
 
         case .psem:
-            return nil // TODO: implement
+            self = .psem(fd: fd) // TODO: implement info
 
         case .pshm:
-            return nil // TODO: implement
+            self = .pshm(fd: fd) // TODO: implement info
 
         case .socket:
             guard let socketInfo = pid.fdInfo(type: .socketInfo, forFD: fd) else { return nil }
