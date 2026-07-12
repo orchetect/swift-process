@@ -74,7 +74,10 @@ extension FileDescriptorInfo {
 
         guard let fdTypeInt32 = Int32(exactly: fdInfo.proc_fdtype),
               let fileDescriptorFlavor = FileDescriptorFlavor(rawValue: fdTypeInt32)
-        else { return nil }
+        else {
+            assertionFailure("Unhandled file descriptor flavor with raw value: \(fdInfo.proc_fdtype)")
+            return nil
+        }
 
         switch fileDescriptorFlavor {
         case .appleTalk:
