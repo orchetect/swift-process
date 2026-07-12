@@ -6,8 +6,6 @@
 
 import Foundation
 
-// MARK: - Executable Path
-
 // MARK: - BSD Info
 
 @available(macOS 10.15, *)
@@ -46,6 +44,28 @@ extension PID {
         #endif
     }
 }
+
+// MARK: - SysCtl Info
+
+extension PID {
+    /// Returns the launch date and time of the process as `Date`.
+    /// If the process is no longer running or an error occurred, `nil` is returned.
+    nonisolated
+    public var launchDate: Date? {
+        guard let secondsSinceEpoch = sysctlInfo?.kp_proc.p_starttime.tv_sec else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(secondsSinceEpoch))
+    }
+
+    /// Returns the uptime of the process in seconds.
+    /// If the process is no longer running or an error occurred, `nil` is returned.
+    nonisolated
+    public var uptime: TimeInterval? {
+        guard let launchDate else { return nil }
+        return Date().timeIntervalSince(launchDate)
+    }
+}
+
+// MARK: - Executable Path
 
 extension PID {
     nonisolated
@@ -104,5 +124,73 @@ extension PID {
     nonisolated
     public var isExists: Bool {
         (try? Self.all.contains(self)) == true
+    }
+}
+
+// MARK: - File Descriptors / Ports
+
+extension PID {
+    /// Returns a list of open file and port descriptors for the process.
+    /// If the process is no longer running or an error occurred, an empty collection is returned.
+    ///
+    /// > Note: The underlying API returns file descriptors reachable for the user. To return all descriptors
+    /// >including ones for processes not owned by the user account,  `sudo` privileges are required.
+    ///
+    /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always returns an empty collection.
+    nonisolated
+    public var fileDescriptors: [FileDescriptorInfo] {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        let bufferByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, nil, 0)
+        guard bufferByteCount > 0 else { return [] }
+
+        // the buffer is typically sized larger than the number of `proc_fdinfo` elements
+        // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFDS.
+        let stride = MemoryLayout<proc_fdinfo>.stride
+        let maximumPossibleCount = Int(bufferByteCount) / stride
+        let fds = Array<proc_fdinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+            let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, buffer.baseAddress!, bufferByteCount)
+            assert(Int(initializedByteCount).isMultiple(of: stride))
+            // this actual count is often less than the "maximum possible" count (original buffer size)
+            let actualCount = Int(initializedByteCount) / stride
+            initializedCount = actualCount
+        }
+
+        let fileDescriptors = fds.compactMap { FileDescriptorInfo(fdInfo: $0, pid: self) }
+
+        return fileDescriptors
+        #else
+        return []
+        #endif
+    }
+
+    /// Returns a list of open file and mach port descriptors for the process.
+    /// If the process is no longer running or an error occurred, an empty collection is returned.
+    /// Note: The underlying API requires `sudo` privileges or it will return an empty collection.
+    ///
+    /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always returns an empty collection.
+    nonisolated
+    public var filePorts: [proc_fileportinfo] {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        let bufferByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, nil, 0)
+        guard bufferByteCount > 0 else { return [] }
+
+        // the buffer is typically sized larger than the number of `proc_fileportinfo` elements
+        // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFILEPORTS.
+        let stride = MemoryLayout<proc_fileportinfo>.stride
+        let maximumPossibleCount = Int(bufferByteCount) / stride
+        let fpInfos = Array<proc_fileportinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+            let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, buffer.baseAddress!, bufferByteCount)
+            assert(Int(initializedByteCount).isMultiple(of: stride))
+            // this actual count is often less than the "maximum possible" count (original buffer size)
+            let actualCount = Int(initializedByteCount) / stride
+            initializedCount = actualCount
+        }
+
+        return fpInfos
+        #else
+        return []
+        #endif
     }
 }

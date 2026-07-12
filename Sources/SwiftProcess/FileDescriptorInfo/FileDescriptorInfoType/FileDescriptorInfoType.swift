@@ -42,4 +42,14 @@ extension FileDescriptorInfoType {
     }
 }
 
+// MARK: - Utilities
+
+extension PID {
+    /// Internal method to return a FD info value for the process.
+    nonisolated
+    func fdInfo<T: FileDescriptorInfoType>(type infoType: T, forFD fd: Int32) -> T.ReturnValue? {
+        infoType.get(fd: fd, pid: self)
+    }
+}
+
 #endif

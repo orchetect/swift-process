@@ -1,8 +1,7 @@
 //
 //  PID+Metadata.swift
-//  swift-process
-//
-//  Created by Steffan Andrews on 2026-07-11.
+//  SwiftProcess • https://github.com/orchetect/swift-process
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if os(macOS) || targetEnvironment(macCatalyst)
