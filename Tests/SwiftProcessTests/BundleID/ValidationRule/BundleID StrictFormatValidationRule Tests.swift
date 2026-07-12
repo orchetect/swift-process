@@ -10,7 +10,7 @@ import Testing
 @Suite
 struct BundleID_StrictFormatValidationRule_Tests {
     @Test
-    func valid() async throws {
+    func valid() {
         let strings = [
             "com.apple.finder",
             "com.apple.Music",
@@ -31,7 +31,7 @@ struct BundleID_StrictFormatValidationRule_Tests {
     }
 
     @Test
-    func invalid() async throws {
+    func invalid() {
         let strings = [
             "",
             " ",

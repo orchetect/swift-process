@@ -19,7 +19,9 @@ struct PipeFileDescriptorInfoType: FileDescriptorInfoType {
 
 extension FileDescriptorInfoType where Self == PipeFileDescriptorInfoType {
     nonisolated
-    static var pipeInfo: Self { Self() }
+    static var pipeInfo: Self {
+        Self()
+    }
 }
 
 #endif

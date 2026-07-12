@@ -47,12 +47,12 @@ struct BundleID_Tests {
         #expect(!(BundleID(rawValue: "com.apple.Safari") < BundleID(rawValue: "com.apple.Safari")))
         #expect(!(BundleID(rawValue: "com.apple.Safari") > BundleID(rawValue: "com.apple.Safari")))
 
-        #expect((BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.Safari")))
+        #expect(BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.Safari"))
         #expect(!(BundleID(rawValue: "com.apple.finder") < BundleID(rawValue: "com.apple.Safari"))) // by char, not lexical
-        #expect((BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.safari")))
+        #expect(BundleID(rawValue: "com.apple.Finder") < BundleID(rawValue: "com.apple.safari"))
 
         #expect(!(BundleID(rawValue: "com.apple.Finder") > BundleID(rawValue: "com.apple.Safari")))
-        #expect((BundleID(rawValue: "com.apple.finder") > BundleID(rawValue: "com.apple.Safari"))) // by char, not lexical
+        #expect(BundleID(rawValue: "com.apple.finder") > BundleID(rawValue: "com.apple.Safari")) // by char, not lexical
         #expect(!(BundleID(rawValue: "com.apple.Finder") > BundleID(rawValue: "com.apple.safari")))
     }
 

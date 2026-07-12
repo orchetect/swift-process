@@ -15,11 +15,11 @@ struct Collection_PID_Tests {
         // we can just use the test target's process
         PID(ProcessInfo.processInfo.processIdentifier)
     }
-    
+
     @Test
     func first_dummyPIDs() {
         let sequence: [PID] = [PID(123), PID(456), PID(789)]
-        
+
         // ensure first is the correct result
         #expect(sequence.first == PID(123))
         // ensure it returns the same result each time it's called
@@ -46,11 +46,11 @@ struct Collection_PID_Tests {
         #expect(sequence.first == pid)
     }
     #endif
-    
+
     @Test
     func contains_dummyPIDs() {
         let sequence: [PID] = [PID(123), PID(456), PID(789)]
-        
+
         #expect(sequence.contains(PID(123)))
         #expect(sequence.contains(PID(456)))
         #expect(!sequence.contains(PID(100)))

@@ -28,7 +28,7 @@ struct PID_Static_Tests {
     }
 
     #if os(macOS) || targetEnvironment(macCatalyst)
-    
+
     // MARK: - System Processes Iterators
 
     @Test

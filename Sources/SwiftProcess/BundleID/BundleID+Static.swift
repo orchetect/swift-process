@@ -20,4 +20,3 @@ extension BundleID {
         #endif
     }
 }
-

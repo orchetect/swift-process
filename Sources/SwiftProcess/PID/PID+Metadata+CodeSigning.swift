@@ -1,5 +1,5 @@
 //
-//  PID+Metadata.swift
+//  PID+Metadata+CodeSigning.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -45,7 +45,7 @@ extension PID {
     nonisolated
     public var codeSigningInfo: [String: Any]? {
         var signingInfo: CFDictionary?
-        guard let securityStaticCode = securityStaticCode else { return nil }
+        guard let securityStaticCode else { return nil }
 
         let result = SecCodeCopySigningInformation(
             securityStaticCode,
@@ -54,7 +54,7 @@ extension PID {
         )
 
         guard result == errSecSuccess else { return nil }
-        guard let signingInfo = signingInfo as? [String: Any]  else { return nil }
+        guard let signingInfo = signingInfo as? [String: Any] else { return nil }
 
         return signingInfo
     }

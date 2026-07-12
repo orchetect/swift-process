@@ -138,7 +138,7 @@ extension PID {
     public class InfoIterator<Element>: IteratorProtocol {
         nonisolated
         init() { }
-        
+
         nonisolated
         public func next() -> Element? {
             nil

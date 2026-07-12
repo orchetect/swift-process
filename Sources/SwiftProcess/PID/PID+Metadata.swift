@@ -159,7 +159,7 @@ extension PID {
         // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFDS.
         let stride = MemoryLayout<proc_fdinfo>.stride
         let maximumPossibleCount = Int(bufferByteCount) / stride
-        let fds = Array<proc_fdinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+        let fds = [proc_fdinfo](unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
             let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, buffer.baseAddress!, bufferByteCount)
             assert(Int(initializedByteCount).isMultiple(of: stride))
             // this actual count is often less than the "maximum possible" count (original buffer size)
@@ -192,7 +192,7 @@ extension PID {
         // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFILEPORTS.
         let stride = MemoryLayout<proc_fileportinfo>.stride
         let maximumPossibleCount = Int(bufferByteCount) / stride
-        let fpInfos = Array<proc_fileportinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+        let fpInfos = [proc_fileportinfo](unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
             let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, buffer.baseAddress!, bufferByteCount)
             assert(Int(initializedByteCount).isMultiple(of: stride))
             // this actual count is often less than the "maximum possible" count (original buffer size)

@@ -10,7 +10,7 @@ import Testing
 @Suite
 struct BundleID_NonEmptyValidationRule_Tests {
     @Test
-    func nonEmpty_relaxed_valid() async throws {
+    func nonEmpty_relaxed_valid() {
         let strings = [
             "a",
             ".a.",
@@ -46,7 +46,7 @@ struct BundleID_NonEmptyValidationRule_Tests {
     }
 
     @Test
-    func nonEmpty_relaxed_invalid() async throws {
+    func nonEmpty_relaxed_invalid() {
         let strings = [
             "",
             " ",

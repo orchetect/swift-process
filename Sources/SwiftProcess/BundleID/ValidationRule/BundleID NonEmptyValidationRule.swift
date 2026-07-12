@@ -9,11 +9,11 @@ extension BundleID {
     /// that may contain only periods.
     public struct NonEmptyValidationRule: ValidationRule {
         public init() { }
-        
+
         public func isValid(string: some StringProtocol) -> Bool {
             let components = string.split(separator: ".")
             let isBundleIDEmpty = components
-                .filter({ !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+                .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
                 .isEmpty
             return !isBundleIDEmpty
         }

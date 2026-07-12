@@ -22,7 +22,9 @@ struct VNodeFileDescriptorInfoType: FileDescriptorInfoType {
 
 extension FileDescriptorInfoType where Self == VNodeFileDescriptorInfoType {
     nonisolated
-    static var vNodeInfo: Self { Self() }
+    static var vNodeInfo: Self {
+        Self()
+    }
 }
 
 #endif

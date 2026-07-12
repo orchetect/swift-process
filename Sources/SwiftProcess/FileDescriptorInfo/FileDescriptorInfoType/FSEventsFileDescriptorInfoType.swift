@@ -19,7 +19,9 @@ struct FSEventsFileDescriptorInfoType: FileDescriptorInfoType {
 
 extension FileDescriptorInfoType where Self == FSEventsFileDescriptorInfoType {
     nonisolated
-    static var fsEventsInfo: Self { Self() }
+    static var fsEventsInfo: Self {
+        Self()
+    }
 }
 
 #endif

@@ -42,7 +42,6 @@ extension FileDescriptorInfo {
         case let .pshm(fd: fd): fd
         case let .socket(fd: fd, socketInfo: _): fd
         #endif
-
         case let .vNode(fd: fd, path: _): fd
         }
     }
@@ -62,7 +61,6 @@ extension FileDescriptorInfo {
         case .pshm: .pshm
         case .socket: .socket
         #endif
-
         case .vNode: .vNode
         }
     }

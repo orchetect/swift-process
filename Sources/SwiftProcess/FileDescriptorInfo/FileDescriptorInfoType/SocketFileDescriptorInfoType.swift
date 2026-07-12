@@ -19,7 +19,9 @@ struct SocketFileDescriptorInfoType: FileDescriptorInfoType {
 
 extension FileDescriptorInfoType where Self == SocketFileDescriptorInfoType {
     nonisolated
-    static var socketInfo: Self { Self() }
+    static var socketInfo: Self {
+        Self()
+    }
 }
 
 #endif
