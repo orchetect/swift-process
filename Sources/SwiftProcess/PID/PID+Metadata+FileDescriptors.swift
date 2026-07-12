@@ -15,19 +15,22 @@ extension PID {
     nonisolated
     public var fileDescriptors: [FileDescriptorInfo] {
         #if os(macOS) || targetEnvironment(macCatalyst)
-        let bufferSize = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, nil, 0)
+        let bufferByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, nil, 0)
+        guard bufferByteCount > 0 else { return [] }
 
-        guard bufferSize > 0 else { return [] }
-
+        // the buffer is typically sized larger than the number of `proc_fdinfo` elements
+        // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFDS.
         let stride = MemoryLayout<proc_fdinfo>.stride
-        let fdCount = Int(bufferSize) / stride
-        let allFDs = Array<proc_fdinfo>(unsafeUninitializedCapacity: fdCount) { buffer, initializedCount in
-            let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, buffer.baseAddress!, bufferSize)
+        let maximumPossibleCount = Int(bufferByteCount) / stride
+        let fds = Array<proc_fdinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+            let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFDS, 0, buffer.baseAddress!, bufferByteCount)
             assert(Int(initializedByteCount).isMultiple(of: stride))
-            initializedCount = Int(initializedByteCount) / stride
+            // this actual count is often less than the "maximum possible" count (original buffer size)
+            let actualCount = Int(initializedByteCount) / stride
+            initializedCount = actualCount
         }
 
-        let fileDescriptors = allFDs.compactMap { FileDescriptorInfo(fdInfo: $0, pid: self) }
+        let fileDescriptors = fds.compactMap { FileDescriptorInfo(fdInfo: $0, pid: self) }
 
         return fileDescriptors
         #else
