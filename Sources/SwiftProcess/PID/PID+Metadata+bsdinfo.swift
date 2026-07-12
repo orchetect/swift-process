@@ -9,7 +9,7 @@ import Foundation
 extension PID {
     #if os(macOS) || targetEnvironment(macCatalyst)
 
-    /// Returns the BSD info struct for the process.
+    /// Returns the BSD information struct for the process.
     /// If the process is no longer running or an error occurred, `nil` is returned.
     nonisolated
     public var bsdInfo: proc_bsdinfo? {
