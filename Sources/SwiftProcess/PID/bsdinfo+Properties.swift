@@ -44,7 +44,7 @@ extension proc_bsdinfo {
     nonisolated
     func getName() -> String {
         // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
-        typealias NameTuple = (
+        typealias Tuple = (
             CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
             CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
             CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
@@ -52,8 +52,8 @@ extension proc_bsdinfo {
         )
         // swiftformat:options --wrap-collections before-first --allow-partial-wrapping false
 
-        let tuple: NameTuple = pbi_name
-        let charCount = MemoryLayout<NameTuple>.stride // 32 bytes
+        let tuple: Tuple = pbi_name
+        let charCount = MemoryLayout<Tuple>.stride // 32 bytes
         let string = withUnsafePointer(to: tuple) { ptr in
             ptr.withMemoryRebound(to: CChar.self, capacity: charCount) { pointer in
                 String(cString: pointer)

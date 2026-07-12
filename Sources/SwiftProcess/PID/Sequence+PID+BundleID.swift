@@ -1,5 +1,5 @@
 //
-//  PID+Collection+BundleID.swift
+//  Sequence+PID+BundleID.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
