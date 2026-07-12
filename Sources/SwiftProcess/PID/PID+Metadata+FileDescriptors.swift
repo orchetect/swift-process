@@ -10,6 +10,9 @@ extension PID {
     /// Returns a list of open file and port descriptors for the process.
     /// If the process is no longer running or an error occurred, an empty collection is returned.
     ///
+    /// > Note: The underlying API returns file descriptors reachable for the user. To return all descriptors
+    /// >including ones for processes not owned by the user account,  `sudo` privileges are required.
+    ///
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always returns an empty collection.
     nonisolated
@@ -33,6 +36,36 @@ extension PID {
         let fileDescriptors = fds.compactMap { FileDescriptorInfo(fdInfo: $0, pid: self) }
 
         return fileDescriptors
+        #else
+        return []
+        #endif
+    }
+
+    /// Returns a list of open file and mach port descriptors for the process.
+    /// If the process is no longer running or an error occurred, an empty collection is returned.
+    /// Note: The underlying API requires `sudo` privileges or it will return an empty collection.
+    ///
+    /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always returns an empty collection.
+    nonisolated
+    public var filePorts: [proc_fileportinfo] {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        let bufferByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, nil, 0)
+        guard bufferByteCount > 0 else { return [] }
+
+        // the buffer is typically sized larger than the number of `proc_fileportinfo` elements
+        // that proc_pidinfo() actually ends up returning for PROC_PIDLISTFILEPORTS.
+        let stride = MemoryLayout<proc_fileportinfo>.stride
+        let maximumPossibleCount = Int(bufferByteCount) / stride
+        let fpInfos = Array<proc_fileportinfo>(unsafeUninitializedCapacity: maximumPossibleCount) { buffer, initializedCount in
+            let initializedByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, buffer.baseAddress!, bufferByteCount)
+            assert(Int(initializedByteCount).isMultiple(of: stride))
+            // this actual count is often less than the "maximum possible" count (original buffer size)
+            let actualCount = Int(initializedByteCount) / stride
+            initializedCount = actualCount
+        }
+
+        return fpInfos
         #else
         return []
         #endif
