@@ -200,7 +200,7 @@ extension PID {
             initializedCount = actualCount
         }
 
-        return []
+        return fpInfos
     }
 
     #endif
