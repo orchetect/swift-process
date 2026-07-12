@@ -1,5 +1,5 @@
 //
-//  PID+Collection+BundleID Tests.swift
+//  Collection+PID+BundleID Tests.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -14,7 +14,7 @@ import SwiftProcess
 import Testing
 
 @Suite
-struct PID_Collection_BundleID_Tests {
+struct Collection_PID_BundleID_Tests {
     /// Provide a process identifier of a live process in the system to test against.
     private func exampleProcess() -> PID? {
         let pids = BundleID("com.apple.finder").pids
