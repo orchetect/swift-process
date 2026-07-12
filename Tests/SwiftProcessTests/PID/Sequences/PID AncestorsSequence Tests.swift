@@ -16,9 +16,9 @@ struct PID_AncestorsSequence_Tests {
     private func exampleProcess() throws -> PID? {
         #if os(macOS)
         try PID.all
-            .first(where: { $0.name == "Finder" })
+            .first(where: { $0.name == "Finder" && $0.bundleID == BundleID("com.apple.finder") })
         #else
-        PID.current
+        PID(ProcessInfo.processInfo.processIdentifier)
         #endif
     }
 

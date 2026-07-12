@@ -49,6 +49,12 @@ struct PID_Static_Tests {
         #expect(!pidsWithout0Or1.contains { $0.rawValue == 0 })
         #expect(!pidsWithout0Or1.contains { $0.rawValue == 1 })
     }
-    
+
+    @Test
+    func randomUnused() throws {
+        let id: PID = try .randomUnused
+        #expect(try !PID.all.contains(id))
+    }
+
     #endif
 }
