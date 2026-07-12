@@ -8,7 +8,7 @@ import Foundation
 
 extension PID {
     #if os(macOS) || targetEnvironment(macCatalyst)
-    
+
     /// Returns the BSD info struct for the process.
     /// If the process is no longer running or an error occurred, `nil` is returned.
     nonisolated
@@ -34,39 +34,42 @@ extension PID {
     }
 
     #endif
-    
+}
+
+// MARK: - BSD Info
+
+@available(macOS 10.15, *)
+@available(iOS, deprecated, message: "Not available on iOS.")
+@available(tvOS, deprecated, message: "Not available on tvOS.")
+@available(watchOS, deprecated, message: "Not available on watchOS.")
+@available(visionOS, deprecated, message: "Not available on visionOS.")
+extension PID {
+    /// Returns the command name of the process (Limited to 15 characters).
+    /// If the process is no longer running or no name is returned from the system, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
+
+    nonisolated
+    public var commandName: String? {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        guard let bsdInfo else { return nil }
+        return bsdInfo.getCommandName()
+        #else
+        return nil
+        #endif
+    }
+
     /// Returns the name of the process.
     /// If the process is no longer running or no name is returned from the system, `nil` is returned.
     ///
     /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
     /// > On all other platforms, this property always returns `nil`.
-    @available(macOS 10.15, *)
-    @available(iOS, deprecated, message: "Not available on iOS.")
-    @available(tvOS, deprecated, message: "Not available on tvOS.")
-    @available(watchOS, deprecated, message: "Not available on watchOS.")
-    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public var name: String? {
         #if os(macOS) || targetEnvironment(macCatalyst)
         guard let bsdInfo else { return nil }
-
-        // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
-        typealias NameTuple = (
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar
-        )
-        // swiftformat:options --wrap-collections before-first --allow-partial-wrapping false
-
-        let tuple: NameTuple = bsdInfo.pbi_name
-        let charCount = MemoryLayout<NameTuple>.stride // 32 bytes
-        let string = withUnsafePointer(to: tuple) { ptr in
-            ptr.withMemoryRebound(to: CChar.self, capacity: charCount) { pointer in
-                String(cString: pointer)
-            }
-        }
-        return string
+        return bsdInfo.getName()
         #else
         return nil
         #endif
