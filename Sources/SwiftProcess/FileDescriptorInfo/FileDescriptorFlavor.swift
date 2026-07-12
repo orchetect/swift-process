@@ -31,6 +31,7 @@ extension FileDescriptorFlavor: CaseIterable { }
 #if os(macOS) || targetEnvironment(macCatalyst)
 
 extension FileDescriptorFlavor: RawRepresentable {
+    nonisolated
     public init?(rawValue: Int32) {
         guard let match = Self.allCases.first(where: { $0.rawValue == rawValue }) else {
             return nil
@@ -38,6 +39,7 @@ extension FileDescriptorFlavor: RawRepresentable {
         self = match
     }
 
+    nonisolated
     public var rawValue: Int32 {
         switch self {
         case .appleTalk: PROX_FDTYPE_ATALK

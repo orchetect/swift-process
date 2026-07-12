@@ -31,6 +31,7 @@ extension PID {
 
 extension PID {
     /// Returns the process identifier for the current process.
+    nonisolated
     public static var current: PID {
         PID(ProcessInfo.processInfo.processIdentifier)
     }
@@ -43,6 +44,7 @@ extension PID {
     /// currently running in the system).
     ///
     /// This is mainly useful for debugging and unit testing and has no real use case in production code.
+    nonisolated
     public static var randomUnused: PID {
         get throws(SystemError) {
             let allPIDs = try Self.all

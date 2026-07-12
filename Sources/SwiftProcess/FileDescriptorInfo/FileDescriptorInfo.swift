@@ -27,6 +27,7 @@ extension FileDescriptorInfo: Sendable { }
 
 extension FileDescriptorInfo {
     /// Proxy property to return the `fd` associated value.
+    nonisolated
     public var fd: Int32 {
         switch self {
         #if os(macOS) || targetEnvironment(macCatalyst)
@@ -46,6 +47,7 @@ extension FileDescriptorInfo {
         }
     }
 
+    nonisolated
     public var flavor: FileDescriptorFlavor {
         switch self {
         #if os(macOS) || targetEnvironment(macCatalyst)
@@ -69,6 +71,7 @@ extension FileDescriptorInfo {
 #if os(macOS) || targetEnvironment(macCatalyst)
 
 extension FileDescriptorInfo {
+    nonisolated
     public init?(fdInfo: proc_fdinfo, pid: PID) {
         let fd = fdInfo.proc_fd
 

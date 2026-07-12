@@ -19,11 +19,13 @@ protocol FileDescriptorInfoType {
 }
 
 extension FileDescriptorInfoType {
+    nonisolated
     func get(fd: Int32, pid: PID) -> ReturnValue? {
         guard let readValue = readValue(fd: fd, pid: pid) else { return nil }
         return process(readValue: readValue)
     }
 
+    nonisolated
     private func readValue(fd: Int32, pid: PID) -> ReadValue? {
         let pid = pid.rawValue
         let fdInfoType = rawValue

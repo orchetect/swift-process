@@ -22,6 +22,7 @@ extension PID {
         case skipResourceDirectory
         case calculateCMSDigest
 
+        nonisolated
         var rawValue: UInt32 {
             switch self {
             case .internalInformation: kSecCSInternalInformation
@@ -34,6 +35,7 @@ extension PID {
             }
         }
 
+        nonisolated
         var asSecCSFlags: SecCSFlags {
             SecCSFlags(rawValue: rawValue)
         }
@@ -41,6 +43,7 @@ extension PID {
 
     /// Returns the code signing info dictionary for the process's executable.
     /// This returns `nil` if no running application matches the process identifier.
+    nonisolated
     public var codeSigningInfo: [String: Any]? {
         var signingInfo: CFDictionary?
         guard let securityStaticCode = securityStaticCode else { return nil }
@@ -61,6 +64,7 @@ extension PID {
 // MARK: - Utilities
 
 extension PID {
+    nonisolated
     private var securityStaticCode: SecStaticCode? {
         guard let executableURL else { return nil }
         return SecStaticCode.make(executableURL: executableURL)
@@ -68,6 +72,7 @@ extension PID {
 }
 
 extension SecStaticCode {
+    nonisolated
     static func make(executableURL: URL) -> SecStaticCode? {
         var secStaticCode: SecStaticCode?
 

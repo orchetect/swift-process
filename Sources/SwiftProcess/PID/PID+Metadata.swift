@@ -48,7 +48,10 @@ extension PID {
 }
 
 extension PID {
+    nonisolated
     static let PROC_PIDPATHINFO_MAXSIZE: UInt32 = 4096
+
+    nonisolated
     static let kProcPidPathInfoMaxSize = Int(PROC_PIDPATHINFO_MAXSIZE)
 
     /// Returns the path to the executable for the process.
