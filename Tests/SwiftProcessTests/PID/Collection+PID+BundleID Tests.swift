@@ -29,8 +29,8 @@ struct Collection_PID_BundleID_Tests {
         let sequence = PID.AncestorsSequence(
             initialPID: pid,
             isInitialIncluded: true,
-            isPID0Allowed: true,
-            isPID1Allowed: true
+            isPID0Included: true,
+            isPID1Included: true
         )
 
         let ids = sequence.compactMap(\.bundleID)
@@ -58,8 +58,8 @@ struct Collection_PID_BundleID_Tests {
         let sequence = PID.AncestorsSequence(
             initialPID: pid,
             isInitialIncluded: true,
-            isPID0Allowed: true,
-            isPID1Allowed: true
+            isPID0Included: true,
+            isPID1Included: true
         )
 
         let ids = Array(sequence.bundleIDs)
@@ -75,8 +75,8 @@ struct Collection_PID_BundleID_Tests {
         let sequence = PID.AncestorsSequence(
             initialPID: pid,
             isInitialIncluded: true,
-            isPID0Allowed: true,
-            isPID1Allowed: true
+            isPID0Included: true,
+            isPID1Included: true
         )
 
         let id = sequence.firstBundleID
