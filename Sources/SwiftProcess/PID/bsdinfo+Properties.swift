@@ -20,21 +20,10 @@ extension proc_bsdinfo {
     /// and not 16 (the field size).
     nonisolated
     func getCommandName() -> String {
-        // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
-        typealias Tuple = (
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar
-        )
-        // swiftformat:options --wrap-collections before-first --allow-partial-wrapping false
-
-        let tuple: Tuple = pbi_comm
-        let charCount = MemoryLayout<Tuple>.stride // 16 bytes
-        let string = withUnsafePointer(to: tuple) { ptr in
-            ptr.withMemoryRebound(to: CChar.self, capacity: charCount) { pointer in
-                String(cString: pointer)
-            }
+        withUnsafeBytes(of: pbi_comm) { rawPtr in
+            let ptr = rawPtr.baseAddress!.assumingMemoryBound(to: CChar.self)
+            return String(cString: ptr)
         }
-        return string
     }
 
     /// Returns the name of the process (Limited to 31 characters).
@@ -43,23 +32,10 @@ extension proc_bsdinfo {
     /// and not 32 (the field size).
     nonisolated
     func getName() -> String {
-        // swiftformat:options --wrap-collections preserve --allow-partial-wrapping true
-        typealias Tuple = (
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar,
-            CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar
-        )
-        // swiftformat:options --wrap-collections before-first --allow-partial-wrapping false
-
-        let tuple: Tuple = pbi_name
-        let charCount = MemoryLayout<Tuple>.stride // 32 bytes
-        let string = withUnsafePointer(to: tuple) { ptr in
-            ptr.withMemoryRebound(to: CChar.self, capacity: charCount) { pointer in
-                String(cString: pointer)
-            }
+        withUnsafeBytes(of: pbi_name) { rawPtr in
+            let ptr = rawPtr.baseAddress!.assumingMemoryBound(to: CChar.self)
+            return String(cString: ptr)
         }
-        return string
     }
 }
 
