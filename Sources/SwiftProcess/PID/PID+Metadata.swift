@@ -144,9 +144,6 @@ extension PID {
     /// Returns a list of open file and port descriptors for the process.
     /// If the process is no longer running or an error occurred, an empty collection is returned.
     ///
-    /// > Note: The underlying API returns file descriptors reachable for the user. To return all descriptors
-    /// >including ones for processes not owned by the user account,  `sudo` privileges are required.
-    ///
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always returns an empty collection.
     nonisolated
@@ -179,7 +176,6 @@ extension PID {
 
     /// Returns a list of open file and mach port descriptors for the process.
     /// If the process is no longer running or an error occurred, an empty collection is returned.
-    /// Note: The underlying API requires `sudo` privileges or it will return an empty collection.
     ///
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always returns an empty collection.
