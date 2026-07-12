@@ -19,7 +19,12 @@ protocol FileDescriptorInfoType {
 }
 
 extension FileDescriptorInfoType {
-    func readValue(fd: Int32, pid: PID) -> ReadValue? {
+    func get(fd: Int32, pid: PID) -> ReturnValue? {
+        guard let readValue = infoType.readValue(fd: fd, pid: pid) else { return nil }
+        return infoType.process(readValue: readValue)
+    }
+
+    private func readValue(fd: Int32, pid: PID) -> ReadValue? {
         let pid = pid.rawValue
         let fdInfoType = rawValue
 
@@ -32,7 +37,6 @@ extension FileDescriptorInfoType {
 
         guard isNonEmpty else { return nil }
         return buffer
-
     }
 }
 
