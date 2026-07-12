@@ -6,6 +6,47 @@
 
 import Foundation
 
+// MARK: - Executable Path
+
+// MARK: - BSD Info
+
+@available(macOS 10.15, *)
+@available(iOS, deprecated, message: "Not available on iOS.")
+@available(tvOS, deprecated, message: "Not available on tvOS.")
+@available(watchOS, deprecated, message: "Not available on watchOS.")
+@available(visionOS, deprecated, message: "Not available on visionOS.")
+extension PID {
+    /// Returns the command name of the process (Limited to 15 characters).
+    /// If the process is no longer running or no name is returned from the system, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
+    nonisolated
+    public var commandName: String? {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        // proc_bsdshortinfo often has more information on non-user processes than proc_bsdinfo
+        return bsdShortInfo?.getCommandName() ?? bsdInfo?.getCommandName()
+        #else
+        return nil
+        #endif
+    }
+
+    /// Returns the name of the process.
+    /// If the process is no longer running or no name is returned from the system, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
+    nonisolated
+    public var name: String? {
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        guard let bsdInfo else { return nil }
+        return bsdInfo.getName()
+        #else
+        return nil
+        #endif
+    }
+}
+
 extension PID {
     static let PROC_PIDPATHINFO_MAXSIZE: UInt32 = 4096
     static let kProcPidPathInfoMaxSize = Int(PROC_PIDPATHINFO_MAXSIZE)
