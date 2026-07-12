@@ -54,6 +54,9 @@ extension PID {
     /// Returns a boolean value describing whether a process with the process identifier
     /// currently exists and belongs to a running process.
     /// If the process is no longer running or an error occurred, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `false`.
     nonisolated
     public var isExists: Bool {
         (try? Self.all.contains(self)) == true
