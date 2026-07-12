@@ -200,4 +200,20 @@ extension PID {
     }
 
     #endif
+
+    #if os(macOS)
+
+    /// Returns the contents of `lsof` containing open file and ports of the process.
+    /// This often contains more items than calling ``fileDescriptors`` or ``filePorts``.
+    @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
+    nonisolated
+    public func lsof(arguments: [String] = ["-b"]) throws -> [String] {
+        // -b asks `lsof` to avoid kernel functions that might block
+        let argumentsString = arguments.joined(separator: " ") + " "
+        var command = CommandProcess(command: "lsof \(argumentsString)-p \(rawValue)")
+        try command.runAndWait()
+        return command.output
+    }
+
+    #endif
 }
