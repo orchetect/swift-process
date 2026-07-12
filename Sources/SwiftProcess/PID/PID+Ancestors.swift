@@ -19,6 +19,9 @@ extension PID {
     @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public var parent: PID? {
+        // PID 0 never has a parent.
+        guard rawValue != 0 else { return nil }
+
         #if os(macOS) || targetEnvironment(macCatalyst)
         // proc_bsdshortinfo often has more information on non-user processes than proc_bsdinfo
 

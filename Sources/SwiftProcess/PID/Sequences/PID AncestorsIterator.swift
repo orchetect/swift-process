@@ -23,6 +23,9 @@ extension PID {
         public let initialPID: PID
 
         nonisolated
+        public let isPID0Included: Bool
+
+        nonisolated
         public let isPID1Included: Bool
 
         // MARK: State
@@ -34,9 +37,10 @@ extension PID {
         // MARK: Init
 
         nonisolated
-        public init(pid: PID, isInitialIncluded: Bool, isPID1Included: Bool) {
+        public init(pid: PID, isInitialIncluded: Bool, isPID0Included: Bool, isPID1Included: Bool) {
             // parameters
             initialPID = pid
+            self.isPID0Included = isPID0Included
             self.isPID1Included = isPID1Included
 
             // initial state
@@ -53,8 +57,17 @@ extension PID.AncestorsIterator: IteratorProtocol {
     public mutating func next() -> PID? {
         currentPID = nextProposedPID()
 
-        if let _currentPID = currentPID, _currentPID == .pid1 {
-            if !isPID1Included { currentPID = nil }
+        if let _currentPID = currentPID,
+           _currentPID == .pid1,
+           !isPID1Included
+        {
+            currentPID = nextProposedPID()
+        }
+        if let _currentPID = currentPID,
+           _currentPID == .pid0,
+           !isPID0Included
+        {
+            currentPID = nil
         }
 
         guard let currentPID else { return nil }
