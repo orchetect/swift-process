@@ -1,5 +1,5 @@
 //
-//  PID+Collection Tests.swift
+//  Collection+PID Tests.swift
 //  SwiftProcess • https://github.com/orchetect/swift-process
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -9,7 +9,7 @@ import SwiftProcess
 import Testing
 
 @Suite
-struct PID_Collection_Tests {
+struct Collection_PID_Tests {
     /// Provide a process identifier of a live process in the system to test against.
     private func exampleProcess() -> PID? {
         // we can just use the test target's process
