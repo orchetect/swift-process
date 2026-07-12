@@ -49,7 +49,6 @@ extension PID {
     ///
     /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
     /// > On all other platforms, this property always returns `nil`.
-
     nonisolated
     public var commandName: String? {
         #if os(macOS) || targetEnvironment(macCatalyst)

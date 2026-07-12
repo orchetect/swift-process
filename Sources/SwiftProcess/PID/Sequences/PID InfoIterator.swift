@@ -136,7 +136,6 @@ extension PID.InfoIterator {
 extension PID {
     /// Dummy stand-in for `InfoIterator` on platforms that do not support process info lookup.
     public class InfoIterator<Element>: IteratorProtocol {
-        
         nonisolated
         init() { }
         
