@@ -34,4 +34,18 @@ extension PID {
         return ""
         #endif
     }
+
+    /// Returns the file URL of the executable for the process.
+    ///
+    /// > Note: Path lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns an empty URL.
+    @available(macOS 10.15, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
+    nonisolated
+    public var executableURL: URL {
+        URL(fileURLWithPath: executablePath)
+    }
 }
