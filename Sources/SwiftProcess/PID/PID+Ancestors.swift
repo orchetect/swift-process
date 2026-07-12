@@ -20,9 +20,14 @@ extension PID {
     nonisolated
     public var parent: PID? {
         #if os(macOS) || targetEnvironment(macCatalyst)
-        guard let bsdInfo else { return nil }
-        let parentPID = RawValue(bsdInfo.pbi_ppid)
-        return PID(rawValue: parentPID)
+        // proc_bsdshortinfo often has more information on non-user processes than proc_bsdinfo
+
+        guard let parentPID = bsdShortInfo?.pbsi_ppid ?? bsdInfo?.pbi_ppid
+        else { return nil }
+
+        guard let pid = RawValue(exactly: parentPID) else { return nil }
+
+        return PID(rawValue: pid)
         #else
         return nil
         #endif
