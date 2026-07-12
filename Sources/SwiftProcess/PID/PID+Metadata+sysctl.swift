@@ -45,4 +45,11 @@ extension PID {
         guard let secondsSinceEpoch = sysctlInfo?.kp_proc.p_starttime.tv_sec else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(secondsSinceEpoch))
     }
+
+    /// Returns the uptime of the process in seconds.
+    /// If the process is no longer running or an error occurred, `nil` is returned.
+    public var uptime: TimeInterval? {
+        guard let launchDate else { return nil }
+        return Date().timeIntervalSince(launchDate)
+    }
 }
