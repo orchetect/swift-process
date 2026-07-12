@@ -47,17 +47,32 @@ extension PID {
 
 // MARK: - SysCtl Info
 
+@available(macOS 10.15, macCatalyst 13, *)
+@available(iOS, deprecated, message: "Not available on iOS.")
+@available(tvOS, deprecated, message: "Not available on tvOS.")
+@available(watchOS, deprecated, message: "Not available on watchOS.")
+@available(visionOS, deprecated, message: "Not available on visionOS.")
 extension PID {
     /// Returns the launch date and time of the process as `Date`.
     /// If the process is no longer running or an error occurred, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
     nonisolated
     public var launchDate: Date? {
+        #if os(macOS) || targetEnvironment(macCatalyst)
         guard let secondsSinceEpoch = sysctlInfo?.kp_proc.p_starttime.tv_sec else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(secondsSinceEpoch))
+        #else
+        return nil
+        #endif
     }
 
     /// Returns the uptime of the process in seconds.
     /// If the process is no longer running or an error occurred, `nil` is returned.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns `nil`.
     nonisolated
     public var uptime: TimeInterval? {
         guard let launchDate else { return nil }
@@ -67,6 +82,11 @@ extension PID {
 
 // MARK: - Executable Path
 
+@available(macOS 10.15, macCatalyst 13, *)
+@available(iOS, deprecated, message: "Not available on iOS.")
+@available(tvOS, deprecated, message: "Not available on tvOS.")
+@available(watchOS, deprecated, message: "Not available on watchOS.")
+@available(visionOS, deprecated, message: "Not available on visionOS.")
 extension PID {
     nonisolated
     static let PROC_PIDPATHINFO_MAXSIZE: UInt32 = 4096
@@ -78,11 +98,7 @@ extension PID {
     ///
     /// > Note: Path lookup is only available on macOS and Mac Catalyst.
     /// > On all other platforms, this property always returns an empty string.
-    @available(macOS 10.15, macCatalyst 13, *)
-    @available(iOS, deprecated, message: "Not available on iOS.")
-    @available(tvOS, deprecated, message: "Not available on tvOS.")
-    @available(watchOS, deprecated, message: "Not available on watchOS.")
-    @available(visionOS, deprecated, message: "Not available on visionOS.")
+
     nonisolated
     public var executablePath: String? {
         #if os(macOS) || targetEnvironment(macCatalyst)
@@ -104,11 +120,6 @@ extension PID {
     ///
     /// > Note: Path lookup is only available on macOS and Mac Catalyst.
     /// > On all other platforms, this property always returns an empty URL.
-    @available(macOS 10.15, macCatalyst 13, *)
-    @available(iOS, deprecated, message: "Not available on iOS.")
-    @available(tvOS, deprecated, message: "Not available on tvOS.")
-    @available(watchOS, deprecated, message: "Not available on watchOS.")
-    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public var executableURL: URL? {
         guard let executablePath else { return nil }
@@ -164,6 +175,8 @@ extension PID {
         #endif
     }
 
+    #if os(macOS) || targetEnvironment(macCatalyst)
+
     /// Returns a list of open file and mach port descriptors for the process.
     /// If the process is no longer running or an error occurred, an empty collection is returned.
     /// Note: The underlying API requires `sudo` privileges or it will return an empty collection.
@@ -172,7 +185,6 @@ extension PID {
     /// > On all other platforms, this property always returns an empty collection.
     nonisolated
     public var filePorts: [proc_fileportinfo] {
-        #if os(macOS) || targetEnvironment(macCatalyst)
         let bufferByteCount = proc_pidinfo(rawValue, PROC_PIDLISTFILEPORTS, 0, nil, 0)
         guard bufferByteCount > 0 else { return [] }
 
@@ -188,9 +200,8 @@ extension PID {
             initializedCount = actualCount
         }
 
-        return fpInfos
-        #else
         return []
-        #endif
     }
+
+    #endif
 }

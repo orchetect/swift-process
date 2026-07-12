@@ -56,8 +56,6 @@ extension PID {
     }
 }
 
-#endif
-
 // MARK: - BSD System Control
 
 extension PID {
@@ -91,3 +89,5 @@ extension PID {
         return procInfo
     }
 }
+
+#endif

@@ -44,6 +44,14 @@ extension PID {
     /// currently running in the system).
     ///
     /// This is mainly useful for debugging and unit testing and has no real use case in production code.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this property always returns an empty sequence.
+    @available(macOS 10.15, macCatalyst 13, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public static var randomUnused: PID {
         get throws(SystemError) {
