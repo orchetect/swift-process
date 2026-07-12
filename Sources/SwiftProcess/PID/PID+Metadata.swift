@@ -50,4 +50,12 @@ extension PID {
         guard let executablePath else { return nil }
         return URL(fileURLWithPath: executablePath)
     }
+
+    /// Returns a boolean value describing whether a process with the process identifier
+    /// currently exists and belongs to a running process.
+    /// If the process is no longer running or an error occurred, `nil` is returned.
+    nonisolated
+    public var isExists: Bool {
+        (try? Self.all.contains(self)) == true
+    }
 }
