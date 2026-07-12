@@ -12,7 +12,7 @@ extension PID {
     ///
     /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
     /// > On all other platforms, this property always returns `nil`.
-    @available(macOS 10.15, *)
+    @available(macOS 10.15, macCatalyst 13, *)
     @available(iOS, deprecated, message: "Not available on iOS.")
     @available(tvOS, deprecated, message: "Not available on tvOS.")
     @available(watchOS, deprecated, message: "Not available on watchOS.")

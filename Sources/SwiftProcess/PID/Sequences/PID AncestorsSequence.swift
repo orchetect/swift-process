@@ -8,6 +8,14 @@
 
 extension PID {
     /// Sequence of ancestors of a process.
+    ///
+    /// > Note: Process info lookup is only available on macOS and Mac Catalyst.
+    /// > On all other platforms, this type has undefined behavior.
+    @available(macOS 10.15, macCatalyst 13, *)
+    @available(iOS, deprecated, message: "Not available on iOS.")
+    @available(tvOS, deprecated, message: "Not available on tvOS.")
+    @available(watchOS, deprecated, message: "Not available on watchOS.")
+    @available(visionOS, deprecated, message: "Not available on visionOS.")
     public struct AncestorsSequence {
         nonisolated
         public let initialPID: PID

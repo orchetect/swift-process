@@ -8,7 +8,7 @@
 import AppKit
 #endif
 
-@available(macOS 10.15, *)
+@available(macOS 10.15, macCatalyst 13, *)
 @available(macCatalyst, deprecated, message: "Not available on macCatalyst.")
 @available(iOS, deprecated, message: "Not available on iOS.")
 @available(tvOS, deprecated, message: "Not available on tvOS.")
