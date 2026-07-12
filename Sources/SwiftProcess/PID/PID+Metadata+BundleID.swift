@@ -24,14 +24,21 @@ extension PID {
     public var bundleID: BundleID? {
         // Bundle ID lookup is only available on macOS (not including macCatalyst)
         #if os(macOS)
-        // Create an NSRunningApplication with the given process identifier.
+        // First try creating an NSRunningApplication with the given process identifier to get its bundle ID.
         // This returns `nil` if no running app matches the PID.
-        guard let runningApp = NSRunningApplication(processIdentifier: rawValue),
-              let bundleID = runningApp.bundleIdentifier
-        else {
-            return nil
+        if let runningApp = NSRunningApplication(processIdentifier: rawValue),
+              let bundleIDString = runningApp.bundleIdentifier
+        {
+            return BundleID(bundleIDString)
         }
-        return BundleID(bundleID)
+
+        // Otherwise, attempt to read the codesigning dictionary for the process.
+        else if let bundleIDString = codeSigningInfo?["identifier"] as? String {
+            return BundleID(bundleIDString)
+        }
+
+        // Otherwise, fail
+        else { return nil }
         #else
         return nil
         #endif
