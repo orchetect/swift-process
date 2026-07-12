@@ -8,6 +8,7 @@ import Foundation
 
 public enum FileDescriptorInfo {
     #if os(macOS) || targetEnvironment(macCatalyst)
+    case fsEvents(fd: Int32, pipeInfo: kqueue_info)
     case pipe(fd: Int32, pipeInfo: pipe_info)
     case socket(fd: Int32, socketInfo: socket_info)
     #endif
@@ -21,6 +22,7 @@ extension FileDescriptorInfo {
     public var fd: Int32 {
         switch self {
         #if os(macOS) || targetEnvironment(macCatalyst)
+        case let .fsEvents(fd: fd, pipeInfo: _): fd
         case let .pipe(fd: fd, pipeInfo: _): fd
         case let .socket(fd: fd, socketInfo: _): fd
         #endif
@@ -48,7 +50,8 @@ extension FileDescriptorInfo {
             return nil // TODO: implement
 
         case .fsEvents:
-            return nil // TODO: implement
+            guard let pipeInfo = pid.fdInfo(type: .fsEventsInfo, forFD: fd) else { return nil }
+            self = .fsEvents(fd: fd, pipeInfo: pipeInfo)
 
         case .kqueue:
             return nil // TODO: implement
