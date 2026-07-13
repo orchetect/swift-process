@@ -10,6 +10,12 @@ import func Foundation.perror
 extension PID {
     /// Errors thrown by ``PID`` methods that call system functions.
     public enum SystemError {
+        /// Command execution failed.
+        case commandExecutionFailed(command: String, reason: String)
+
+        /// Feature is not supported on this platform.
+        case notSupported
+
         /// The PID does not belong to a process currently running in the system.
         case pidDoesNotExist
 
@@ -51,6 +57,10 @@ extension PID.SystemError {
 extension PID.SystemError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        case let .commandExecutionFailed(command: command, reason: reason):
+            "\(command) command execution failed. \(reason)"
+        case .notSupported:
+            "Not supported on this platform."
         case .pidDoesNotExist:
             "PID does not exist."
         case let .systemControl(errno, message):

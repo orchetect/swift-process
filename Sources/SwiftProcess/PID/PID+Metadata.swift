@@ -201,19 +201,95 @@ extension PID {
 
     #endif
 
-    #if os(macOS)
-
-    /// Returns the contents of `lsof` containing open file and ports of the process.
-    /// This often contains more items than calling ``fileDescriptors`` or ``filePorts``.
+    /// Returns the file and port descriptors returned by the `lsof` command.
+    /// This typically contains a more thorough list of descriptors than calling ``fileDescriptors`` or ``filePorts``.
+    ///
+    /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always throws an error.
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
-    public func lsof(arguments: [String] = ["-b"]) throws -> [String] {
-        // -b asks `lsof` to avoid kernel functions that might block
-        let argumentsString = arguments.joined(separator: " ") + " "
-        var command = CommandProcess(command: "lsof \(argumentsString)-p \(rawValue)")
-        try command.runAndWait()
-        return command.output
-    }
+    public func lsofDescriptors() throws(SystemError) -> [String] {
+        #if os(macOS)
+        // Reference for parsing `lsof` output:
+        // https://stackoverflow.com/questions/44240818/formatting-lsof-output-into-parsable-structure
 
-    #endif
+        // -F option trailing IDs:
+        //
+        // ID  Field Description
+        // --  -----------------
+        // a   access: r = read; w = write; u = read/write
+        // c   command name
+        // d   device character code
+        // D   major/minor device number as 0x<hex>
+        // f   file descriptor
+        // G   file flaGs
+        // i   inode number
+        // k   link count
+        // K   task ID (TID)
+        // l   lock: r/R = read; w/W = write; u = read/write
+        // L   login name
+        // m   marker between repeated output
+        // M   task comMand name
+        // n   comment, name, Internet addresses
+        // o   file offset as 0t<dec> or 0x<hex>
+        // p   process ID (PID)
+        // g   process group ID (PGID)
+        // P   protocol name
+        // r   raw device number as 0x<hex>
+        // R   paRent PID
+        // s   file size
+        // S   stream module and device names
+        // t   file type
+        // T   TCP/TPI info
+        // u   user ID (UID)
+        // 0   (zero) use NUL field terminator instead of NL
+
+        // when using the -F option with `lsof`, each PID always begins with the PID number header,
+        // which starts with "p" followed by the PID (for example, PID 600 would be output as `p600`
+        // with a trailing newline character (unless the `-Fn` option is specified, in which case it
+        // will have a trailing null byte instead of a newline).
+        //
+        // -Fn0 returns each descriptor as a single line with its name, having fields separated by a null byte
+
+        let arguments: [String] = ["-b", "-l", "-Fn0", "-S 2", "-w"]
+        let argumentsString = arguments.joined(separator: " ") + " "
+
+        var command = CommandProcess(command: "lsof \(argumentsString)-p \(rawValue)")
+        do { try command.runAndWait() }
+        catch { throw .commandExecutionFailed(command: "lsof", reason: error.localizedDescription) }
+
+        // if output is empty or the first line is not a header line, the likely cause is that the PID does not exist
+        let lines = command.output
+        guard lines.first == "p\(rawValue)\0" else {
+            throw .pidDoesNotExist
+        }
+
+        let descriptorLines = lines.dropFirst() // remove header line
+        var names: [String] = []
+        for descriptorLine in descriptorLines {
+            let fields = descriptorLine
+                .split(separator: "\0", omittingEmptySubsequences: true)
+            guard fields.count == 2 else {
+                assertionFailure("Unexpected lsof output.")
+                continue
+            }
+
+            // field 1: descriptor type
+            let descType = fields[fields.startIndex]
+            _ = descType // ignore; not used at this time.
+
+            // field 2: name
+            let name = fields[fields.startIndex.advanced(by: 1)]
+            // name field is prefixed by `n`
+            guard name.hasPrefix("n") else {
+                assertionFailure("Unexpected lsof output.")
+                continue
+            }
+            names.append(String(name[name.index(name.startIndex, offsetBy: 1)...]))
+        }
+        return names
+        #else
+        throw .notSupported
+        #endif
+    }
 }
