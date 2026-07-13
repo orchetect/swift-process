@@ -55,7 +55,7 @@ extension PID.SystemError {
 // MARK: - LocalizedError
 
 extension PID.SystemError: LocalizedError {
-    public var errorDescription: String {
+    public var errorDescription: String? {
         switch self {
         case let .commandExecutionFailed(command: command, reason: reason):
             "\(command) command execution failed. \(reason)"
@@ -73,7 +73,7 @@ extension PID.SystemError: LocalizedError {
 
 extension PID.SystemError: CustomStringConvertible {
     public var description: String {
-        errorDescription
+        errorDescription ?? localizedDescription
     }
 }
 
@@ -81,6 +81,6 @@ extension PID.SystemError: CustomStringConvertible {
 
 extension PID.SystemError: CustomDebugStringConvertible {
     public var debugDescription: String {
-        errorDescription
+        errorDescription ?? localizedDescription
     }
 }
