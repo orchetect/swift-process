@@ -15,7 +15,7 @@ extension PID {
     ///     the process without first allowing it to clean up and terminate gracefully.
     ///     Otherwise, the `SIGTERM` signal is sent which allows graceful termination.
     nonisolated
-    public func terminate(force isForced: Bool = false) throws(SystemError) {
+    public func terminate(force isForced: Bool = false) throws(PIDError) {
         let result = kill(rawValue, isForced ? SIGKILL : SIGTERM)
 
         // On success, 0 is returned.

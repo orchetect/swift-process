@@ -215,7 +215,7 @@ extension PID {
     /// > On all other platforms, this property always throws an error.
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
-    public func lsofDescriptors() throws(SystemError) -> [String] {
+    public func lsofDescriptors() throws(PIDError) -> [String] {
         #if os(macOS)
         var command = try _lsofDescriptorsCommandFactory()
         do { try command.runAndWait() }
@@ -237,7 +237,7 @@ extension PID {
     /// > On all other platforms, this property always throws an error.
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     @concurrent
-    public func lsofDescriptors() async throws(SystemError) -> [String] {
+    public func lsofDescriptors() async throws(PIDError) -> [String] {
         #if os(macOS)
         var command = try _lsofDescriptorsCommandFactory()
         do { try await command.runAndWait() }
@@ -253,7 +253,7 @@ extension PID {
 
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
-    func _lsofDescriptorsCommandFactory() throws(SystemError) -> CommandProcess {
+    func _lsofDescriptorsCommandFactory() throws(PIDError) -> CommandProcess {
         // Reference for parsing `lsof` output:
         // https://stackoverflow.com/questions/44240818/formatting-lsof-output-into-parsable-structure
 
@@ -304,7 +304,7 @@ extension PID {
 
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
-    func _lsofDescriptorNames(fromCompletedCommand command: CommandProcess) throws(SystemError) -> [String] {
+    func _lsofDescriptorNames(fromCompletedCommand command: CommandProcess) throws(PIDError) -> [String] {
         // if output is empty or the first line is not a header line, the likely cause is that the PID does
         // not exist or the current process does not have enough permissions
         let lines = command.output

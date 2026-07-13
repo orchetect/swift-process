@@ -54,7 +54,7 @@ extension PID {
     @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public static var randomUnused: PID {
-        get throws(SystemError) {
+        get throws(PIDError) {
             let allPIDs = try Self.all
             var pid: pid_t = 0
             while pid == 0 || allPIDs.contains(where: { $0.rawValue == pid }) {
@@ -80,7 +80,7 @@ extension PID {
     @available(visionOS, deprecated, message: "Not available on visionOS.")
     nonisolated
     public static var all: InfoSequence<PID> {
-        get throws(SystemError) {
+        get throws(PIDError) {
             #if os(macOS) || targetEnvironment(macCatalyst)
             let iterator = try InfoIterator(elementTransform: {
                 PID($0.kp_proc.p_pid)
@@ -109,7 +109,7 @@ extension PID {
     nonisolated
     public static func all(
         excluding excludedPIDs: some Sequence<PID>
-    ) throws(SystemError) -> InfoSequence<PID> {
+    ) throws(PIDError) -> InfoSequence<PID> {
         #if os(macOS) || targetEnvironment(macCatalyst)
         let iterator = try InfoIterator<PID>(elementTransform: {
             let rawPID = $0.kp_proc.p_pid

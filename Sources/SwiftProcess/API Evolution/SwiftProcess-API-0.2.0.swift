@@ -31,4 +31,10 @@ extension PID.AncestorsSequence {
     }
 }
 
+extension PID {
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "PIDError")
+    public typealias SystemError = PIDError
+}
+
 #endif

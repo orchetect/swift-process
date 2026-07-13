@@ -39,7 +39,7 @@ extension PID {
         nonisolated
         public init(
             memoryInformationBase mib: [Int32]? = nil
-        ) throws(SystemError) where Element == PID.RawValue {
+        ) throws(PIDError) where Element == PID.RawValue {
             elementTransform = { $0.kp_proc.p_pid }
             (processList, processCount) = try Self._pidList(mib: mib ?? Self.defaultMemoryInformationBase)
         }
@@ -53,7 +53,7 @@ extension PID {
         public init(
             memoryInformationBase mib: [Int32]? = nil,
             elementTransform: @escaping ElementTransform
-        ) throws(SystemError) {
+        ) throws(PIDError) {
             self.elementTransform = elementTransform
             (processList, processCount) = try Self._pidList(mib: mib ?? Self.defaultMemoryInformationBase)
         }
@@ -95,7 +95,7 @@ extension PID.InfoIterator {
     /// - See Also: https://gaitatzis.medium.com/listing-running-system-processes-using-swift-43e24c20789c
     /// - See Also: https://stackoverflow.com/a/62801035/2805570
     nonisolated
-    private static func _pidList(mib: [Int32]) throws(PID.SystemError) -> (pointer: UnsafeMutablePointer<kinfo_proc>, count: Int) {
+    private static func _pidList(mib: [Int32]) throws(PIDError) -> (pointer: UnsafeMutablePointer<kinfo_proc>, count: Int) {
         var memoryInformationBase = mib
         let mibCount = memoryInformationBase.count
 

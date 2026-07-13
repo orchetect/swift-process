@@ -56,7 +56,7 @@ extension Sequence<PID> {
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     public func lsofDescriptorsSequence(
         maxConcurrentTasks: Int? = nil
-    ) -> AsyncStream<(PID, Result<[String], PID.SystemError>)> where Self: Sendable {
+    ) -> AsyncStream<(PID, Result<[String], PIDError>)> where Self: Sendable {
         let array = Array(self)
         let maxConcurrentChildTasks = Swift.max(1, (maxConcurrentTasks ?? array.count))
 
@@ -67,11 +67,11 @@ extension Sequence<PID> {
             }
             
             let task = Task { @concurrent in
-                await withTaskGroup(of: (PID, Result<[String], PID.SystemError>).self) { group in
+                await withTaskGroup(of: (PID, Result<[String], PIDError>).self) { group in
                     var submittedChildTaskCount = 0
 
-                    func getResult(for pid: PID) async -> (PID, Result<[String], PID.SystemError>) {
-                        do throws(PID.SystemError) {
+                    func getResult(for pid: PID) async -> (PID, Result<[String], PIDError>) {
+                        do throws(PIDError) {
                             let descriptors = try await pid.lsofDescriptors()
                             return (pid, .success(descriptors))
                         } catch {

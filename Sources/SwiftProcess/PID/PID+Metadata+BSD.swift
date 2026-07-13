@@ -68,7 +68,7 @@ extension PID {
     /// Returns the `sysctl` information struct (`kinfo_proc`) for the process.
     nonisolated
     public var sysctlInfo: kinfo_proc {
-        get throws(SystemError) {
+        get throws(PIDError) {
             var mib = memoryInformationBase
             var procInfo = kinfo_proc()
             var procInfoSize = MemoryLayout<kinfo_proc>.size

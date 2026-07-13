@@ -101,7 +101,7 @@ struct PID_Metadata_FileDescriptors_Tests {
     @Test
     func lsofDescriptors_Finder_UnsupportedPlatform() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
-        #expect(throws: PID.SystemError.notSupported) {
+        #expect(throws: PIDError.notSupported) {
             let _ = try id.lsofDescriptors()
         }
     }
