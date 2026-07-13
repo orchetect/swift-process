@@ -254,19 +254,6 @@ extension PID {
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
     func _lsofDescriptorsCommandFactory() throws(SystemError) -> CommandProcess {
-        #if DEBUG
-        // When the Xcode debugger is attached, calling `lsof` on the Xcode process causes the current process
-        // to hang.
-        guard !ancestors(isInitialIncluded: true)
-            .contains(where: { $0.name == "Xcode" })
-        else { throw .notSupported }
-        #endif
-
-        // don't call `lsof` for private frameworks, which can cause hangs due to insufficient permissions
-//        guard !ancestors(isInitialIncluded: true)
-//            .contains(where: { $0.executablePath?.starts(with: "/System/Library/PrivateFrameworks") == true })
-//        else { throw .notSupported }
-
         // Reference for parsing `lsof` output:
         // https://stackoverflow.com/questions/44240818/formatting-lsof-output-into-parsable-structure
 
