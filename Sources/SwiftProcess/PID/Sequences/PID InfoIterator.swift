@@ -109,7 +109,7 @@ extension PID.InfoIterator {
             0
         )
         if bufferSizeResult < 0 {
-            throw .init(errno: &errno)
+            throw .systemControl(errno: &errno)
         }
 
         let entryCount = bufferSize / MemoryLayout<kinfo_proc>.stride
@@ -124,7 +124,7 @@ extension PID.InfoIterator {
             0
         )
         if populateProcessListResult < 0 {
-            throw .init(errno: &errno)
+            throw .systemControl(errno: &errno)
         }
 
         return (pointer: processList, count: entryCount)

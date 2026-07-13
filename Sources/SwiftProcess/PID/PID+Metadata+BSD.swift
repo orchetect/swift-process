@@ -83,7 +83,7 @@ extension PID {
             )
 
             guard result == 0 else {
-                throw SystemError(errno: result)
+                throw .systemControl(errno: result)
             }
 
             return procInfo

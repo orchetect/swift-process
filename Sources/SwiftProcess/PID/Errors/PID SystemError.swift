@@ -9,18 +9,12 @@ import func Foundation.perror
 
 extension PID {
     /// Errors thrown by ``PID`` methods that call system functions.
-    public struct SystemError {
-        /// Error number.
-        public let errno: Int32
+    public enum SystemError {
+        /// The PID does not belong to a process currently running in the system.
+        case pidDoesNotExist
 
-        /// Error message.
-        public let message: String
-
-        /// Construct a new instance by populating its properties.
-        public init(errno: Int32, message: String) {
-            self.errno = errno
-            self.message = message
-        }
+        /// Error returned by a call to the `sysctl` command.
+        case systemControl(errno: Int32, message: String)
     }
 }
 
@@ -30,25 +24,25 @@ extension PID.SystemError: Hashable { }
 
 extension PID.SystemError: Sendable { }
 
-// MARK: - Inits
+// MARK: - Static Constructors
 
 extension PID.SystemError {
-    /// Initialize from an immutable error number.
-    /// The error message will be populated automatically.
-    public init(errno errorNumber: Int32) {
+    /// Errors thrown by ``PID`` methods that call system functions.
+    /// The error message will be populated automatically with this constructor.
+    public static func systemControl(errno errorNumber: Int32) -> Self {
         var errorNumber = errorNumber
-        self.init(errno: &errorNumber)
+        return systemControl(errno: &errorNumber)
     }
 
     /// Initialize from a mutable error number.
     /// The error message will be populated automatically.
-    public init(errno errorNumber: inout Int32) {
-        errno = errorNumber
-
+    public static func systemControl(errno errorNumber: inout Int32) -> Self {
         // capture error to a String variable
         var errorMessage = String()
         dump(perror(&errorNumber), to: &errorMessage)
-        message = errorMessage
+        let message = errorMessage
+
+        return .systemControl(errno: errorNumber, message: message)
     }
 }
 
@@ -56,6 +50,11 @@ extension PID.SystemError {
 
 extension PID.SystemError: LocalizedError {
     public var errorDescription: String? {
-        "\(message) (errno: \(errno))"
+        switch self {
+        case .pidDoesNotExist:
+            "PID does not exist."
+        case let .systemControl(errno, message):
+            "\(message) (errno: \(errno))"
+        }
     }
 }
