@@ -4,6 +4,8 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
+import Foundation
+
 extension Sequence<PID> {
     /// Returns the first element in the sequence.
     nonisolated
@@ -52,24 +54,50 @@ extension Sequence<PID> {
     /// Returns the `lsof` command file and port descriptors by gathering them concurrently
     /// and emitted them as an async sequence.
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
-    @concurrent
-    public func lsofDescriptorsSequence() async -> AsyncStream<(PID, Result<[String], PID.SystemError>)> where Self: Sendable {
-        AsyncStream { continuation in
-            let task = Task {
+    public func lsofDescriptorsSequence(
+        maxConcurrentTasks: Int? = nil
+    ) -> AsyncStream<(PID, Result<[String], PID.SystemError>)> where Self: Sendable {
+        let array = Array(self)
+        let maxConcurrentChildTasks = Swift.max(1, (maxConcurrentTasks ?? array.count))
+
+        return AsyncStream { continuation in
+            guard !array.isEmpty else {
+                continuation.finish()
+                return
+            }
+            
+            let task = Task { @concurrent in
                 await withTaskGroup(of: (PID, Result<[String], PID.SystemError>).self) { group in
-                    for pid in self {
-                        group.addTaskUnlessCancelled {
-                            do throws(PID.SystemError) {
-                                let descriptors = try await pid.lsofDescriptors()
-                                return (pid, .success(descriptors))
-                            } catch {
-                                return (pid, .failure(error))
-                            }
+                    var submittedChildTaskCount = 0
+
+                    func getResult(for pid: PID) async -> (PID, Result<[String], PID.SystemError>) {
+                        do throws(PID.SystemError) {
+                            let descriptors = try await pid.lsofDescriptors()
+                            return (pid, .success(descriptors))
+                        } catch {
+                            return (pid, .failure(error))
                         }
+                    }
+
+                    for _ in 0 ..< maxConcurrentChildTasks {
+                        let pid = array[submittedChildTaskCount]
+                        group.addTaskUnlessCancelled {
+                            await getResult(for: pid)
+                        }
+                        submittedChildTaskCount += 1
                     }
 
                     for await result in group {
                         continuation.yield(result)
+
+                        // Every time we get a result back, check if there's more work we should submit and do so
+                        if submittedChildTaskCount < array.count {
+                            let pid = array[submittedChildTaskCount]
+                            group.addTaskUnlessCancelled {
+                                await getResult(for: pid)
+                            }
+                            submittedChildTaskCount += 1
+                        }
                     }
 
                     continuation.finish()
