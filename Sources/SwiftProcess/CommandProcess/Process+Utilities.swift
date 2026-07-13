@@ -51,11 +51,14 @@ extension Process {
         let outputData = SendableData()
         let errorOutputData = SendableData()
 
+        let g = DispatchGroup()
         if let pipe = standardOutput as? Pipe {
+            g.enter()
             pipe.fileHandleForReading.readabilityHandler = { fh in
                 let data = fh.availableData
                 if data.isEmpty { // EOF on the pipe
                     pipe.fileHandleForReading.readabilityHandler = nil
+                    g.leave()
                 } else {
                     outputData.data.append(data)
                 }
@@ -63,10 +66,12 @@ extension Process {
         }
 
         if let pipe = standardError as? Pipe {
+            g.enter()
             pipe.fileHandleForReading.readabilityHandler = { fh in
                 let data = fh.availableData
                 if data.isEmpty { // EOF on the pipe
                     pipe.fileHandleForReading.readabilityHandler = nil
+                    g.leave()
                 } else {
                     errorOutputData.data.append(data)
                 }
@@ -75,6 +80,14 @@ extension Process {
 
         try run()
         waitUntilExit()
+        g.wait(timeout: .now() + 2.0)
+
+        if let pipe = standardOutput as? Pipe {
+            assert(pipe.fileHandleForReading.readabilityHandler == nil)
+        }
+        if let pipe = standardError as? Pipe {
+            assert(pipe.fileHandleForReading.readabilityHandler == nil)
+        }
 
         let output = outputData.data._parsedStringLines()
         let errorOutput = errorOutputData.data._parsedStringLines()
