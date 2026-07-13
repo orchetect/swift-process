@@ -61,7 +61,7 @@ extension PID {
     nonisolated
     public var launchDate: Date? {
         #if os(macOS) || targetEnvironment(macCatalyst)
-        guard let secondsSinceEpoch = sysctlInfo?.kp_proc.p_starttime.tv_sec else { return nil }
+        guard let secondsSinceEpoch = try? sysctlInfo.kp_proc.p_starttime.tv_sec else { return nil }
         return Date(timeIntervalSince1970: TimeInterval(secondsSinceEpoch))
         #else
         return nil

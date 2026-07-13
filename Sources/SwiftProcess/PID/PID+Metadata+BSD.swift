@@ -66,27 +66,28 @@ extension PID {
     }
 
     /// Returns the `sysctl` information struct (`kinfo_proc`) for the process.
-    /// If the process is no longer running or an error occurred, `nil` is returned.
     nonisolated
-    public var sysctlInfo: kinfo_proc? {
-        var mib = memoryInformationBase
-        var procInfo = kinfo_proc()
-        var procInfoSize = MemoryLayout<kinfo_proc>.size
+    public var sysctlInfo: kinfo_proc {
+        get throws(SystemError) {
+            var mib = memoryInformationBase
+            var procInfo = kinfo_proc()
+            var procInfoSize = MemoryLayout<kinfo_proc>.size
 
-        let result = sysctl(
-            &mib,
-            UInt32(mib.count),
-            &procInfo,
-            &procInfoSize,
-            nil,
-            0
-        )
+            let result = sysctl(
+                &mib,
+                UInt32(mib.count),
+                &procInfo,
+                &procInfoSize,
+                nil,
+                0
+            )
 
-        guard result == 0 else {
-            return nil
+            guard result == 0 else {
+                throw SystemError(errno: result)
+            }
+
+            return procInfo
         }
-
-        return procInfo
     }
 }
 
