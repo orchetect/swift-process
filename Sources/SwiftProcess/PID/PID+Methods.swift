@@ -17,8 +17,15 @@ extension PID {
     nonisolated
     public func terminate(force isForced: Bool = false) throws(SystemError) {
         let result = kill(rawValue, isForced ? SIGKILL : SIGTERM)
-        guard result != 0 else {
-            throw .systemControl(errno: errno)
+
+        // On success, 0 is returned.
+        // If signals were sent to a process group, success means that at least one signal was delivered.
+        // On error, -1 is returned, and errno is set to indicate the error.
+
+        switch result {
+        case 0: break
+        case -1: throw .systemControl(errno: errno)
+        default: return
         }
     }
 }
