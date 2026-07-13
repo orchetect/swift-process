@@ -208,6 +208,9 @@ extension PID {
     /// Returns the file and port descriptors returned by the `lsof` command.
     /// This typically contains a more thorough list of descriptors than calling ``fileDescriptors`` or ``filePorts``.
     ///
+    /// > Note: This method is time-consuming and on average completes in several hundred millisconds, but
+    /// > may take several seconds to complete.
+    ///
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always throws an error.
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
@@ -226,6 +229,9 @@ extension PID {
 
     /// Returns the file and port descriptors returned by the `lsof` command.
     /// This typically contains a more thorough list of descriptors than calling ``fileDescriptors`` or ``filePorts``.
+    ///
+    /// > Note: This method is time-consuming and on average completes in several hundred millisconds, but
+    /// > may take several seconds to complete.
     ///
     /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
     /// > On all other platforms, this property always throws an error.
@@ -248,6 +254,19 @@ extension PID {
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
     func _lsofDescriptorsCommandFactory() throws(SystemError) -> CommandProcess {
+        #if DEBUG
+        // When the Xcode debugger is attached, calling `lsof` on the Xcode process causes the current process
+        // to hang.
+        guard !ancestors(isInitialIncluded: true)
+            .contains(where: { $0.name == "Xcode" })
+        else { throw .notSupported }
+        #endif
+
+        // don't call `lsof` for private frameworks, which can cause hangs due to insufficient permissions
+//        guard !ancestors(isInitialIncluded: true)
+//            .contains(where: { $0.executablePath?.starts(with: "/System/Library/PrivateFrameworks") == true })
+//        else { throw .notSupported }
+
         // Reference for parsing `lsof` output:
         // https://stackoverflow.com/questions/44240818/formatting-lsof-output-into-parsable-structure
 
@@ -299,11 +318,10 @@ extension PID {
     @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
     nonisolated
     func _lsofDescriptorNames(fromCompletedCommand command: CommandProcess) throws(SystemError) -> [String] {
-        // if output is empty or the first line is not a header line, the likely cause is that the PID does not exist
+        // if output is empty or the first line is not a header line, the likely cause is that the PID does
+        // not exist or the current process does not have enough permissions
         let lines = command.output
         guard lines.first == "p\(rawValue)\0" else {
-            print(command.output)
-            print(command.errorOutput)
             throw .pidDoesNotExist
         }
 
