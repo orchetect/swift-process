@@ -16,6 +16,10 @@ import Foundation
 /// )
 ///
 /// try command.runAndWait()
+///
+/// print(command.output) // stdout lines
+/// print(command.errorOutput) // stderr lines
+/// print(command.exitCode) // exit code integer
 /// ```
 ///
 /// The underlying mechanism uses `Process` (`NSTask`).
@@ -37,7 +41,7 @@ public struct CommandProcess {
     ///
     /// - Parameters:
     ///   - command: The shell command to execute.
-    ///   - qualityOfService: Optionally specify the quality of service level to use.
+    ///   - qos: Optionally specify the quality of service level to use.
     public init(
         command: String,
         qos: QualityOfService? = nil
@@ -52,6 +56,7 @@ public struct CommandProcess {
 @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
 extension CommandProcess {
     /// Run the subprocess and wait for it to complete before returning.
+    /// The result of the command is written to the ``output``, ``errorOutput``, and ``exitCode`` properties.
     public mutating func runAndWait() throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
         defer { (output, errorOutput, exitCode) = process._extractOutput() }
@@ -60,6 +65,7 @@ extension CommandProcess {
     }
 
     /// Run the subprocess and wait for it to complete before returning.
+    /// The result of the command is written to the ``output``, ``errorOutput``, and ``exitCode`` properties.
     @concurrent
     public mutating func runAndWait() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)

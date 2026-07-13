@@ -33,7 +33,7 @@ public struct BackgroundCommandProcess {
     ///
     /// - Parameters:
     ///   - command: The shell command to execute.
-    ///   - qualityOfService: Optionally specify the quality of service level to use.
+    ///   - qos: Optionally specify the quality of service level to use.
     public init(
         command: String,
         qos: QualityOfService? = nil
@@ -48,12 +48,14 @@ public struct BackgroundCommandProcess {
 @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
 extension BackgroundCommandProcess {
     /// Run the subprocess without waiting for its completion before returning.
+    /// The output of the command is discarded.
     public mutating func runInBackground() throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
         try process.run()
     }
 
     /// Run the subprocess without waiting for its completion before returning.
+    /// The output of the command is discarded.
     public mutating func runInBackground() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
         Task {
