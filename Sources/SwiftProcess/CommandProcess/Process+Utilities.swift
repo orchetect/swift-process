@@ -51,65 +51,48 @@ extension Process {
         let outputData = SendableData()
         let errorOutputData = SendableData()
 
-        // solution for preventing deadlocks
-        // see: https://forums.swift.org/t/the-problem-with-a-frozen-process-in-swift-process-class/39579/6
-
-        try DispatchQueue.global().sync {
-            let outputGroup = DispatchGroup()
-            if let pipe = standardOutput as? Pipe {
-                outputGroup.enter()
-                pipe.fileHandleForReading.readabilityHandler = { fh in
-                    let data = fh.availableData
-                    if data.isEmpty { // EOF on the pipe
-                        pipe.fileHandleForReading.readabilityHandler = nil
-                        outputGroup.leave()
-                    } else {
-                        outputData.data.append(data)
-                    }
+        if let pipe = standardOutput as? Pipe {
+            pipe.fileHandleForReading.readabilityHandler = { fh in
+                let data = fh.availableData
+                if data.isEmpty { // EOF on the pipe
+                    pipe.fileHandleForReading.readabilityHandler = nil
+                } else {
+                    outputData.data.append(data)
                 }
             }
+        }
 
-            let outputErrorGroup = DispatchGroup()
-            if let pipe = standardError as? Pipe {
-                outputErrorGroup.enter()
-                pipe.fileHandleForReading.readabilityHandler = { fh in
-                    let data = fh.availableData
-                    if data.isEmpty { // EOF on the pipe
-                        pipe.fileHandleForReading.readabilityHandler = nil
-                        outputErrorGroup.leave()
-                    } else {
-                        outputData.data.append(data)
-                    }
+        if let pipe = standardError as? Pipe {
+            pipe.fileHandleForReading.readabilityHandler = { fh in
+                let data = fh.availableData
+                if data.isEmpty { // EOF on the pipe
+                    pipe.fileHandleForReading.readabilityHandler = nil
+                } else {
+                    errorOutputData.data.append(data)
                 }
             }
-            
-            try run()
-            waitUntilExit()
-            outputGroup.wait() // Wait for EOF on the pipe.
-            outputErrorGroup.wait() // Wait for EOF on the pipe.
         }
 
-        var output: [String] = []
-        if var string = String(data: outputData.data, encoding: .utf8) {
-            string = string.trimmingCharacters(in: .newlines)
-            let components = string.components(separatedBy: "\n")
-            if !components.isEmpty, !components.allSatisfy(\.isEmpty) {
-                output = components
-            }
-        }
+        try run()
+        waitUntilExit()
 
-        var errorOutput: [String] = []
-        if var string = String(data: errorOutputData.data, encoding: .utf8) {
-            string = string.trimmingCharacters(in: .newlines)
-            let components = string.components(separatedBy: "\n")
-            if !components.isEmpty, !components.allSatisfy(\.isEmpty) {
-                errorOutput = components
-            }
-        }
-
+        let output = outputData.data._parsedStringLines()
+        let errorOutput = errorOutputData.data._parsedStringLines()
         let exitCode = terminationStatus
 
         return (output: output, errorOutput: errorOutput, exitCode: exitCode)
+    }
+}
+
+// MARK: - Utilities
+
+extension Data {
+    fileprivate func _parsedStringLines() -> [String] {
+        guard var string = String(data: self, encoding: .utf8) else { return [] }
+        string = string.trimmingCharacters(in: .newlines)
+        let components = string.components(separatedBy: "\n")
+        guard !components.isEmpty, !components.allSatisfy(\.isEmpty) else { return [] }
+        return components
     }
 }
 
