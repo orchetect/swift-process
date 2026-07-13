@@ -200,7 +200,11 @@ extension PID {
     }
 
     #endif
+}
 
+// MARK: - lsof Descriptors
+
+extension PID {
     /// Returns the file and port descriptors returned by the `lsof` command.
     /// This typically contains a more thorough list of descriptors than calling ``fileDescriptors`` or ``filePorts``.
     ///
@@ -210,6 +214,40 @@ extension PID {
     nonisolated
     public func lsofDescriptors() throws(SystemError) -> [String] {
         #if os(macOS)
+        var command = try _lsofDescriptorsCommandFactory()
+        do { try command.runAndWait() }
+        catch { throw .commandExecutionFailed(command: "lsof", reason: error.localizedDescription) }
+        let names = try _lsofDescriptorNames(fromCompletedCommand: command)
+        return names
+        #else
+        throw .notSupported
+        #endif
+    }
+
+    /// Returns the file and port descriptors returned by the `lsof` command.
+    /// This typically contains a more thorough list of descriptors than calling ``fileDescriptors`` or ``filePorts``.
+    ///
+    /// > Note: File descriptor lookup is only available on macOS (not including Mac Catalyst).
+    /// > On all other platforms, this property always throws an error.
+    @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
+    @concurrent
+    public func lsofDescriptors() async throws(SystemError) -> [String] {
+        #if os(macOS)
+        var command = try _lsofDescriptorsCommandFactory()
+        do { try await command.runAndWait() }
+        catch { throw .commandExecutionFailed(command: "lsof", reason: error.localizedDescription) }
+        let names = try _lsofDescriptorNames(fromCompletedCommand: command)
+        return names
+        #else
+        throw .notSupported
+        #endif
+    }
+
+    #if os(macOS)
+
+    @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
+    nonisolated
+    func _lsofDescriptorsCommandFactory() throws(SystemError) -> CommandProcess {
         // Reference for parsing `lsof` output:
         // https://stackoverflow.com/questions/44240818/formatting-lsof-output-into-parsable-structure
 
@@ -254,13 +292,18 @@ extension PID {
         let arguments: [String] = ["-b", "-l", "-Fn0", "-S 2", "-w"]
         let argumentsString = arguments.joined(separator: " ") + " "
 
-        var command = CommandProcess(command: "lsof \(argumentsString)-p \(rawValue)")
-        do { try command.runAndWait() }
-        catch { throw .commandExecutionFailed(command: "lsof", reason: error.localizedDescription) }
+        let command = CommandProcess(command: "lsof \(argumentsString)-p \(rawValue)")
+        return command
+    }
 
+    @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
+    nonisolated
+    func _lsofDescriptorNames(fromCompletedCommand command: CommandProcess) throws(SystemError) -> [String] {
         // if output is empty or the first line is not a header line, the likely cause is that the PID does not exist
         let lines = command.output
         guard lines.first == "p\(rawValue)\0" else {
+            print(command.output)
+            print(command.errorOutput)
             throw .pidDoesNotExist
         }
 
@@ -288,8 +331,7 @@ extension PID {
             names.append(String(name[name.index(name.startIndex, offsetBy: 1)...]))
         }
         return names
-        #else
-        throw .notSupported
-        #endif
     }
+
+    #endif
 }
