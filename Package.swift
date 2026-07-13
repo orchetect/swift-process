@@ -8,8 +8,17 @@ let package = Package(
     products: [
         .library(name: "SwiftProcess", targets: ["SwiftProcess"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
+    ],
     targets: [
         .target(name: "SwiftProcess"),
-        .testTarget(name: "SwiftProcessTests", dependencies: ["SwiftProcess"])
+        .testTarget(
+            name: "SwiftProcessTests",
+            dependencies: [
+                "SwiftProcess",
+                .product(name: "TestingExtensions", package: "swift-testing-extensions")
+            ]
+        )
     ]
 )
