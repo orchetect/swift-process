@@ -48,4 +48,37 @@ extension Sequence<PID> {
             if !paths.isEmpty { dict[pid] = paths }
         }
     }
+
+    /// Returns the `lsof` command file and port descriptors by gathering them concurrently
+    /// and emitted them as an async sequence.
+    @available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *)
+    @concurrent
+    public func lsofDescriptorsSequence() async -> AsyncStream<(PID, Result<[String], PID.SystemError>)> where Self: Sendable {
+        AsyncStream { continuation in
+            let task = Task {
+                await withTaskGroup(of: (PID, Result<[String], PID.SystemError>).self) { group in
+                    for pid in self {
+                        group.addTaskUnlessCancelled {
+                            do throws(PID.SystemError) {
+                                let descriptors = try await pid.lsofDescriptors()
+                                return (pid, .success(descriptors))
+                            } catch {
+                                return (pid, .failure(error))
+                            }
+                        }
+                    }
+
+                    for await result in group {
+                        continuation.yield(result)
+                    }
+
+                    continuation.finish()
+                }
+            }
+
+            continuation.onTermination = { _ in
+                task.cancel()
+            }
+        }
+    }
 }
