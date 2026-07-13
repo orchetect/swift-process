@@ -59,9 +59,7 @@ extension CommandProcess {
     /// The result of the command is written to the ``output``, ``errorOutput``, and ``exitCode`` properties.
     public mutating func runAndWait() throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
-        defer { (output, errorOutput, exitCode) = process._extractOutput() }
-        try process.run()
-        process.waitUntilExit()
+        (output, errorOutput, exitCode) = try process._runAndExtractOutput()
     }
 
     /// Run the subprocess and wait for it to complete before returning.
@@ -69,9 +67,7 @@ extension CommandProcess {
     @concurrent
     public mutating func runAndWait() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
-        defer { (output, errorOutput, exitCode) = process._extractOutput() }
-        try process.run()
-        process.waitUntilExit()
+        (output, errorOutput, exitCode) = try process._runAndExtractOutput()
     }
 }
 
