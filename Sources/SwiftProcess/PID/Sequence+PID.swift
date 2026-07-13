@@ -57,6 +57,9 @@ extension Sequence<PID> {
     public func lsofDescriptorsSequence(
         maxConcurrentTasks: Int? = nil
     ) -> AsyncStream<(PID, Result<[String], PIDError>)> where Self: Sendable {
+        // this implements the task throttling method the Swift org recommends:
+        // https://www.swift.org/migration/documentation/swift-6-concurrency-migration-guide/runtimebehavior/
+
         let array = Array(self)
         let maxConcurrentChildTasks = Swift.max(1, (maxConcurrentTasks ?? array.count))
 

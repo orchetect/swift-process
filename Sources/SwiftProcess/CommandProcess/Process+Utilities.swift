@@ -51,6 +51,9 @@ extension Process {
         let outputData = SendableData()
         let errorOutputData = SendableData()
 
+        // solution for preventing deadlocks:
+        // see: https://forums.swift.org/t/the-problem-with-a-frozen-process-in-swift-process-class/39579/6
+
         let g = DispatchGroup()
         if let pipe = standardOutput as? Pipe {
             g.enter()
