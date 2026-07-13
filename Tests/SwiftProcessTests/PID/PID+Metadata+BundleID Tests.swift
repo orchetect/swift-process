@@ -26,6 +26,13 @@ struct PID_Metadata_BundleID_Tests {
     }
 
     @Test
+    func bundleID_NonExistentPID() throws {
+        let id: PID = try .randomUnused
+        let bundleID = id.bundleID
+        #expect(bundleID == nil)
+    }
+
+    @Test
     func bundleID_Finder() throws {
         let id = try #require(PID.all.first(where: { $0.name == "Finder" }))
         let bundleID = try #require(id.bundleID)

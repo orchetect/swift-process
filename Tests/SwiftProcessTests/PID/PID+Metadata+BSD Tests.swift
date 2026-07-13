@@ -26,6 +26,13 @@ struct PID_Metadata_BSD_Tests {
     }
 
     @Test
+    func commandName_NonExistentPID() throws {
+        let id: PID = try .randomUnused
+        let commandName = id.commandName
+        #expect(commandName == nil)
+    }
+
+    @Test
     func commandName_Finder() throws {
         let id = try #require(BundleID("com.apple.finder").pids.first)
         let commandName = try #require(id.commandName)
@@ -37,6 +44,13 @@ struct PID_Metadata_BSD_Tests {
         let id = try #require(exampleProcess())
         let name = try #require(id.name)
         #expect(!name.isEmpty)
+    }
+
+    @Test
+    func name_NonExistentPID() throws {
+        let id: PID = try .randomUnused
+        let name = id.name
+        #expect(name == nil)
     }
 
     @Test

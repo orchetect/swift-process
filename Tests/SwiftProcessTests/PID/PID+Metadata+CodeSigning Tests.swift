@@ -25,6 +25,13 @@ struct PID_Metadata_CodeSigning_Tests {
         #expect(!infoDict.isEmpty)
     }
 
+    @Test
+    func codeSigningInfo_NonExistentPID() throws {
+        let id: PID = try .randomUnused
+        let infoDict = id.codeSigningInfo
+        #expect(infoDict == nil)
+    }
+
     #if os(macOS)
     @Test
     func codeSigningInfo_Finder() throws {
