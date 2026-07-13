@@ -80,7 +80,8 @@ extension Process {
 
         try run()
         waitUntilExit()
-        g.wait(timeout: .now() + 2.0)
+        let result = g.wait(timeout: .now() + 2.0)
+        assert(result == .success)
 
         if let pipe = standardOutput as? Pipe {
             assert(pipe.fileHandleForReading.readabilityHandler == nil)

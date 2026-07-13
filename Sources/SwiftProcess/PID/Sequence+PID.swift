@@ -81,7 +81,7 @@ extension Sequence<PID> {
 
                     for _ in 0 ..< maxConcurrentChildTasks {
                         let pid = array[submittedChildTaskCount]
-                        group.addTaskUnlessCancelled {
+                        _ = group.addTaskUnlessCancelled {
                             await getResult(for: pid)
                         }
                         submittedChildTaskCount += 1
@@ -93,7 +93,7 @@ extension Sequence<PID> {
                         // Every time we get a result back, check if there's more work we should submit and do so
                         if submittedChildTaskCount < array.count {
                             let pid = array[submittedChildTaskCount]
-                            group.addTaskUnlessCancelled {
+                            _ = group.addTaskUnlessCancelled {
                                 await getResult(for: pid)
                             }
                             submittedChildTaskCount += 1
