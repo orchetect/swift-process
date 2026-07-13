@@ -60,13 +60,12 @@ extension CommandProcess {
     }
 
     /// Run the subprocess and wait for it to complete before returning.
+    @concurrent
     public mutating func runAndWait() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
         defer { (output, errorOutput, exitCode) = process._extractOutput() }
-        try await Task {
-            try process.run()
-            process.waitUntilExit()
-        }.value
+        try process.run()
+        process.waitUntilExit()
     }
 }
 
