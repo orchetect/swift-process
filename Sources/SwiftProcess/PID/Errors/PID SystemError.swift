@@ -16,7 +16,8 @@ extension PID {
         /// Feature is not supported on this platform.
         case notSupported
 
-        /// The PID does not belong to a process currently running in the system.
+        /// The PID does not belong to a process currently running in the system, or
+        /// the current process has insufficient privileges to retrieve information for it.
         case pidDoesNotExist
 
         /// Error returned by a call to the `sysctl` command.
@@ -62,7 +63,7 @@ extension PID.SystemError: LocalizedError {
         case .notSupported:
             "Not supported on this platform."
         case .pidDoesNotExist:
-            "PID does not exist."
+            "PID does not exist, or insufficient privileges."
         case let .systemControl(errno, message):
             "\(message) (errno: \(errno))"
         }
