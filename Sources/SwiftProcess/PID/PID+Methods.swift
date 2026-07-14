@@ -16,6 +16,7 @@ extension PID {
     ///     Otherwise, the `SIGTERM` signal is sent which allows graceful termination.
     nonisolated
     public func terminate(force isForced: Bool = false) throws(PIDError) {
+        #if !os(Android)
         let result = kill(rawValue, isForced ? SIGKILL : SIGTERM)
 
         // On success, 0 is returned.
@@ -24,8 +25,11 @@ extension PID {
 
         switch result {
         case 0: break
-        case -1: throw .systemControl(errno: errno)
+        case -1: throw .systemControl(errno: &errno)
         default: return
         }
+        #else
+        throw .notSupported
+        #endif
     }
 }
