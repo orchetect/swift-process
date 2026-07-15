@@ -44,6 +44,12 @@ public struct PID {
 
 extension PID: Equatable { }
 
+extension PID: Comparable {
+    public static func < (lhs: PID, rhs: PID) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
 extension PID: Hashable { }
 
 extension PID: Sendable { }
