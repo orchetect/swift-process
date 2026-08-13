@@ -55,6 +55,18 @@ struct CommandProcess_NonAsync_Tests {
         #expect(command.errorOutput.isEmpty)
         #expect(command.exitCode == 65)
     }
+
+    /// Check that very large output from a moderately long-running command is fully captured.
+    @Test
+    func longOutput() /* NOT ASYNC */ throws {
+        let cmd = #"sleep 0.5; for i in {1..1000}; do echo "LINE"; done; sleep 0.5; echo "END""#
+        var command = CommandProcess(command: cmd)
+        try command.runAndWait()
+        #expect(command.output.count == 1001)
+        #expect(command.output.last == "END")
+        #expect(command.errorOutput.isEmpty)
+        #expect(command.exitCode == 0)
+    }
 }
 
 @Suite
@@ -102,6 +114,18 @@ struct CommandProcess_Async_Tests {
         #expect(command.output.isEmpty)
         #expect(command.errorOutput.isEmpty)
         #expect(command.exitCode == 65)
+    }
+
+    /// Check that very large output from a moderately long-running command is fully captured.
+    @Test
+    func longOutput() async throws {
+        let cmd = #"sleep 0.5; for i in {1..1000}; do echo "LINE"; done; sleep 0.5; echo "END""#
+        var command = CommandProcess(command: cmd)
+        try await command.runAndWait()
+        #expect(command.output.count == 1001)
+        #expect(command.output.last == "END")
+        #expect(command.errorOutput.isEmpty)
+        #expect(command.exitCode == 0)
     }
 }
 
