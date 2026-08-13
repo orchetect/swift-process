@@ -33,21 +33,6 @@ extension Process {
     }
 
     func _runAndExtractOutput() throws -> (output: [String], errorOutput: [String], exitCode: Int32) {
-        final class SendableData: Sendable {
-            var data: Data {
-                get { lock.withLock { _data } }
-                _modify {
-                    lock.lock()
-                    defer { lock.unlock() }
-                    yield &_data
-                }
-                set { lock.withLock { _data = newValue } }
-            }
-            nonisolated(unsafe) private var _data: Data = .init()
-            let lock = NSLock()
-            init() { }
-        }
-
         let outputData = SendableData()
         let errorOutputData = SendableData()
 
@@ -111,6 +96,21 @@ extension Data {
         guard !components.isEmpty, !components.allSatisfy(\.isEmpty) else { return [] }
         return components
     }
+}
+
+fileprivate final class SendableData: Sendable {
+    var data: Data {
+        get { lock.withLock { _data } }
+        _modify {
+            lock.lock()
+            defer { lock.unlock() }
+            yield &_data
+        }
+        set { lock.withLock { _data = newValue } }
+    }
+    nonisolated(unsafe) private var _data: Data = .init()
+    let lock = NSLock()
+    init() { }
 }
 
 #endif
