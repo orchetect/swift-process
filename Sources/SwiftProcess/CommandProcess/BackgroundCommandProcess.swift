@@ -58,7 +58,7 @@ extension BackgroundCommandProcess {
     /// The output of the command is discarded.
     public mutating func runInBackground() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
-        Task {
+        _ = Task {
             try process.run()
         }
     }
