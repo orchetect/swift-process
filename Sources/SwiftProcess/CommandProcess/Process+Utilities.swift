@@ -68,7 +68,10 @@ extension Process {
 
         try run()
         waitUntilExit()
+
+        // TODO: Xcode 27 beta 5: Thread inversion runtime warning (user-initiated waiting on lower Qos)
         let result = g.wait(timeout: .now() + 2.0)
+
         assert(result == .success)
 
         if let pipe = standardOutput as? Pipe {
