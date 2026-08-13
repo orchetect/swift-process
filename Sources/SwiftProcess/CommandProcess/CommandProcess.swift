@@ -67,7 +67,7 @@ extension CommandProcess {
     @concurrent
     public mutating func runAndWait() async throws {
         let process = Process(command: command, qualityOfService: qualityOfService)
-        (output, errorOutput, exitCode) = try process._runAndExtractOutput()
+        (output, errorOutput, exitCode) = try await process._runAndExtractOutput()
     }
 }
 

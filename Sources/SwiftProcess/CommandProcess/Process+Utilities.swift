@@ -74,6 +74,7 @@ extension Process {
 
         assert(result == .success)
 
+        // nil out handlers out of an abundance of caution
         if let pipe = standardOutput as? Pipe {
             assert(pipe.fileHandleForReading.readabilityHandler == nil)
         }
@@ -81,6 +82,71 @@ extension Process {
             assert(pipe.fileHandleForReading.readabilityHandler == nil)
         }
 
+        // prepare return values
+        let output = outputData.value._parsedStringLines()
+        let errorOutput = errorOutputData.value._parsedStringLines()
+        let exitCode = terminationStatus
+
+        return (output: output, errorOutput: errorOutput, exitCode: exitCode)
+    }
+
+    func _runAndExtractOutput() async throws -> (output: [String], errorOutput: [String], exitCode: Int32) {
+        let outputData = SendableLock(Data())
+        let errorOutputData = SendableLock(Data())
+
+        var outputDataTask: Task<(), any Error>?
+        var errorOutputDataTask: Task<(), any Error>?
+
+
+        if let pipe = standardOutput as? Pipe {
+            let task = Task {
+                try await withCheckedThrowingContinuation { continuation in
+                    pipe.fileHandleForReading.readabilityHandler = { fh in
+                        let data = fh.availableData
+                        if data.isEmpty { // EOF on the pipe
+                            pipe.fileHandleForReading.readabilityHandler = nil
+                            continuation.resume()
+                        } else {
+                            outputData.value.append(data)
+                        }
+                    }
+                }
+            }
+            outputDataTask = task
+        }
+
+        if let pipe = standardError as? Pipe {
+            let task = Task {
+                try await withCheckedThrowingContinuation { continuation in
+                    pipe.fileHandleForReading.readabilityHandler = { fh in
+                        let data = fh.availableData
+                        if data.isEmpty { // EOF on the pipe
+                            pipe.fileHandleForReading.readabilityHandler = nil
+                            continuation.resume()
+                        } else {
+                            errorOutputData.value.append(data)
+                        }
+                    }
+                }
+            }
+            errorOutputDataTask = task
+        }
+
+        try run()
+        waitUntilExit()
+
+        // wait for output pipe tasks to finish asynchronously
+        let (_, _) = await (outputDataTask?.result, errorOutputDataTask?.result)
+
+        // nil out handlers out of an abundance of caution
+        if let pipe = standardOutput as? Pipe {
+            assert(pipe.fileHandleForReading.readabilityHandler == nil)
+        }
+        if let pipe = standardError as? Pipe {
+            assert(pipe.fileHandleForReading.readabilityHandler == nil)
+        }
+
+        // prepare return values
         let output = outputData.value._parsedStringLines()
         let errorOutput = errorOutputData.value._parsedStringLines()
         let exitCode = terminationStatus
