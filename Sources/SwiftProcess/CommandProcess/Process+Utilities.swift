@@ -33,8 +33,8 @@ extension Process {
     }
 
     func _runAndExtractOutput() throws -> (output: [String], errorOutput: [String], exitCode: Int32) {
-        let outputData = SendableData()
-        let errorOutputData = SendableData()
+        let outputData = SendableLock(Data())
+        let errorOutputData = SendableLock(Data())
 
         // solution for preventing deadlocks:
         // see: https://forums.swift.org/t/the-problem-with-a-frozen-process-in-swift-process-class/39579/6
@@ -48,7 +48,7 @@ extension Process {
                     pipe.fileHandleForReading.readabilityHandler = nil
                     g.leave()
                 } else {
-                    outputData.data.append(data)
+                    outputData.value.append(data)
                 }
             }
         }
@@ -61,7 +61,7 @@ extension Process {
                     pipe.fileHandleForReading.readabilityHandler = nil
                     g.leave()
                 } else {
-                    errorOutputData.data.append(data)
+                    errorOutputData.value.append(data)
                 }
             }
         }
@@ -78,8 +78,8 @@ extension Process {
             assert(pipe.fileHandleForReading.readabilityHandler == nil)
         }
 
-        let output = outputData.data._parsedStringLines()
-        let errorOutput = errorOutputData.data._parsedStringLines()
+        let output = outputData.value._parsedStringLines()
+        let errorOutput = errorOutputData.value._parsedStringLines()
         let exitCode = terminationStatus
 
         return (output: output, errorOutput: errorOutput, exitCode: exitCode)
@@ -96,21 +96,6 @@ extension Data {
         guard !components.isEmpty, !components.allSatisfy(\.isEmpty) else { return [] }
         return components
     }
-}
-
-fileprivate final class SendableData: Sendable {
-    var data: Data {
-        get { lock.withLock { _data } }
-        _modify {
-            lock.lock()
-            defer { lock.unlock() }
-            yield &_data
-        }
-        set { lock.withLock { _data = newValue } }
-    }
-    nonisolated(unsafe) private var _data: Data = .init()
-    let lock = NSLock()
-    init() { }
 }
 
 #endif
