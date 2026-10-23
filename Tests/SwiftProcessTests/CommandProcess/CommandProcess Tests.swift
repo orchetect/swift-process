@@ -22,7 +22,7 @@ struct CommandProcess_NonAsync_Tests {
 
     @Test
     func lsOutput() /* NOT ASYNC */ throws {
-        var command = CommandProcess(command: "ls")
+        var command = CommandProcess(command: "cd ~; ls")
         try command.runAndWait()
         #expect(!command.output.isEmpty)
         #expect(command.errorOutput.isEmpty)
@@ -82,11 +82,12 @@ struct CommandProcess_Async_Tests {
 
     @Test
     func lsOutput() async throws {
-        var command = CommandProcess(command: "ls")
+        var command = CommandProcess(command: "cd ~; ls")
         try await command.runAndWait()
         #expect(!command.output.isEmpty)
         #expect(command.errorOutput.isEmpty)
         #expect(command.exitCode == 0)
+        dump(command.output)
     }
 
     @Test
